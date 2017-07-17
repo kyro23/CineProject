@@ -8,7 +8,7 @@ public class FilmModel {
 	private String genere;
 	private int duraction;
 	private String directors;
-	private int classindicative;
+	private String classindicative;
 	public int getId() {
 		return id;
 	}
@@ -51,10 +51,10 @@ public class FilmModel {
 	public void setDirectors(String directors) {
 		this.directors = directors;
 	}
-	public int getClassindicative() {
+	public String getClassindicative() {
 		return classindicative;
 	}
-	public void setClassindicative(int classindicative) {
+	public void setClassindicative(String classindicative) {
 		this.classindicative = classindicative;
 	}
 	

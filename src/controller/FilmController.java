@@ -24,7 +24,7 @@ public class FilmController {
 			stmt.setString(4, film.getGenere());
 			stmt.setInt(5, film.getDuraction());
 			stmt.setString(6, film.getDirectors());
-			stmt.setInt(7, film.getClassindicative());
+			stmt.setString(7, film.getClassindicative());
 			
 			stmt.executeUpdate();
 			
@@ -59,7 +59,7 @@ public class FilmController {
 				film.setGenere(rs.getString("genere"));
 				film.setDuraction(rs.getInt("duraction"));
 				film.setDirectors(rs.getString("directors"));
-				film.setClassindicative(rs.getInt("classIndicative"));
+				film.setClassindicative(rs.getString("classIndicative"));
 				
 				films.add(film);
 			}
@@ -86,7 +86,7 @@ public class FilmController {
 			stmt.setString(4, film.getGenere());
 			stmt.setInt(5, film.getDuraction());
 			stmt.setString(6, film.getDirectors());
-			stmt.setInt(7, film.getClassindicative());
+			stmt.setString(7, film.getClassindicative());
 			stmt.setInt(8, film.getId());
 			
 			stmt.executeUpdate();
@@ -106,7 +106,7 @@ public class FilmController {
 			stmt = con.prepareStatement("DELETE FROM film WHERE id = ?");
 			stmt.setInt(1, film.getId());
 			
-			stmt.executeQuery();
+			stmt.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

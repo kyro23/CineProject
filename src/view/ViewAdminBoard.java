@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import model.FilmModel;
 import model.RoomModel;
 import model.UserModel;
 import java.awt.BorderLayout;
@@ -16,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import controller.FilmController;
 import controller.RoomController;
 import controller.UserController;
 
@@ -28,6 +30,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.Toolkit;
+import javax.swing.JTextArea;
 
 public class ViewAdminBoard extends JFrame {
 
@@ -46,6 +49,12 @@ public class ViewAdminBoard extends JFrame {
 	private JTable tblRooms;
 	private JTextField txtCapacity;
 	private JTextField txtRoomNumber;
+	private JTable tblFilm;
+	private JTextField txtTitle;
+	private JTextField txtActors;
+	private JTextField txtGenere;
+	private JTextField txtDuraction;
+	private JTextField txtDirectors;
 
 	/**
 	 * Launch the application.
@@ -348,12 +357,233 @@ public class ViewAdminBoard extends JFrame {
 		
 		JPanel panel_6 = new JPanel();
 		tabbedPane.addTab("Filmes", new ImageIcon(ViewAdminBoard.class.getResource("/images/film.png")), panel_6, null);
+		panel_6.setLayout(null);
+		
+		JPanel panel_7 = new JPanel();
+		panel_7.setBounds(0, 0, 768, 205);
+		panel_6.add(panel_7);
+		panel_7.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane scrollPane_2 = new JScrollPane();
+		panel_7.add(scrollPane_2, BorderLayout.CENTER);
+		
+		tblFilm = new JTable();
+		tblFilm.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null, null, null, null, null},
+			},
+			new String[] {
+				"ID", "T\u00EDtulo", "Atores", "Sinopse", "G\u00EAnero", "Dura\u00E7\u00E3o", "Diretores", "Class. Indicativa"
+			}
+		) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false, false, false, true, true
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		tblFilm.getColumnModel().getColumn(0).setResizable(false);
+		tblFilm.getColumnModel().getColumn(1).setResizable(false);
+		tblFilm.getColumnModel().getColumn(2).setResizable(false);
+		tblFilm.getColumnModel().getColumn(3).setResizable(false);
+		tblFilm.getColumnModel().getColumn(4).setResizable(false);
+		tblFilm.getColumnModel().getColumn(5).setResizable(false);
+		scrollPane_2.setViewportView(tblFilm);
+	
+		
+		JPanel panel_8 = new JPanel();
+		panel_8.setBorder(new TitledBorder(null, "Filme", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_8.setBounds(0, 252, 768, 191);
+		panel_6.add(panel_8);
+		panel_8.setLayout(null);
+				
+		txtTitle = new JTextField();
+		txtTitle.setBounds(82, 38, 142, 20);
+		panel_8.add(txtTitle);
+		txtTitle.setColumns(10);
+		
+		JLabel lblTtulo = new JLabel("T\u00EDtulo");
+		lblTtulo.setBounds(26, 41, 46, 14);
+		panel_8.add(lblTtulo);
+		
+		txtActors = new JTextField();
+		txtActors.setBounds(82, 69, 142, 20);
+		panel_8.add(txtActors);
+		txtActors.setColumns(10);
+		
+		JLabel lblAtores = new JLabel("Atores");
+		lblAtores.setBounds(26, 72, 46, 14);
+		panel_8.add(lblAtores);
+		
+		JTextArea txtSinopse = new JTextArea();
+		txtSinopse.setLineWrap(true);
+		txtSinopse.setBounds(499, 36, 249, 129);
+		panel_8.add(txtSinopse);
+		
+		JLabel lblSinopse = new JLabel("Sinopse");
+		lblSinopse.setBounds(443, 41, 46, 14);
+		panel_8.add(lblSinopse);
+		
+		txtGenere = new JTextField();
+		txtGenere.setBounds(82, 100, 142, 20);
+		panel_8.add(txtGenere);
+		txtGenere.setColumns(10);
+		
+		JLabel lblGnero = new JLabel("G\u00EAnero");
+		lblGnero.setBounds(26, 103, 46, 14);
+		panel_8.add(lblGnero);
+		
+		txtDuraction = new JTextField();
+		txtDuraction.setBounds(312, 38, 119, 20);
+		panel_8.add(txtDuraction);
+		txtDuraction.setColumns(10);
+		
+		JLabel lblDurao = new JLabel("Dura\u00E7\u00E3o");
+		lblDurao.setBounds(246, 41, 56, 14);
+		panel_8.add(lblDurao);
+		
+		txtDirectors = new JTextField();
+		txtDirectors.setBounds(312, 69, 119, 20);
+		panel_8.add(txtDirectors);
+		txtDirectors.setColumns(10);
+		
+		JLabel lblDiretores = new JLabel("Diretores");
+		lblDiretores.setBounds(246, 72, 56, 14);
+		panel_8.add(lblDiretores);
+		
+		JComboBox<Object> cbClassIndic = new JComboBox<Object>();
+		cbClassIndic.setModel(new DefaultComboBoxModel<Object>(new String[] {"Livre", "10 anos", "12 anos", "14 anos", "16 anos", "18 anos"}));
+		cbClassIndic.setBounds(356, 100, 75, 20);
+		panel_8.add(cbClassIndic);
+		
+		JLabel lblClassIndicativa = new JLabel("Class. Indicativa");
+		lblClassIndicativa.setBounds(246, 106, 100, 14);
+		panel_8.add(lblClassIndicativa);
+		
+		JButton btnExcluir = new JButton("Excluir");
+		btnExcluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(tblFilm.getSelectedRow() != -1) {
+					int id = Integer.parseInt(tblFilm.getValueAt(tblFilm.getSelectedRow(), 0).toString());
+					deleteFilm(id);
+					JOptionPane.showMessageDialog(null, "Excluído com sucesso!");
+				}
+			}
+		});
+		btnExcluir.setBounds(669, 216, 89, 23);
+		panel_6.add(btnExcluir);
+		
+		JButton btnSalvar_1 = new JButton("Salvar");
+		btnSalvar_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int id = Integer.parseInt(tblFilm.getValueAt(tblFilm.getSelectedRow(), 0).toString());
+				String title = txtTitle.getText();
+				String actors = txtActors.getText();
+				String sinopse = txtSinopse.getText();
+				String genere = txtGenere.getText();
+				int duraction = Integer.parseInt(txtDuraction.getText());
+				String directors = txtDirectors.getText();
+				String classIndicative = cbClassIndic.getSelectedItem().toString();
+				
+				updateFilm(id, title, actors, sinopse, genere, duraction, directors, classIndicative);
+				
+				txtSinopse.setText("");
+				txtActors.setText("");
+				txtDirectors.setText("");
+				txtDuraction.setText("");
+				txtGenere.setText("");
+				txtTitle.setText("");
+				cbClassIndic.setSelectedItem(cbClassIndic.getItemAt(0));
+				
+				btnSalvar_1.setEnabled(true);
+				JOptionPane.showMessageDialog(null, "Filme editado com sucesso!");
+				
+			}
+		});
+		
+		btnSalvar_1.setBounds(246, 142, 89, 23);
+		panel_8.add(btnSalvar_1);
+		
+		btnSalvar_1.setEnabled(false);
+		
+		JButton btnAdicionarFilme = new JButton("Adicionar FIlme");
+		btnAdicionarFilme.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				
+				
+				if(!txtTitle.getText().isEmpty() && !txtActors.getText().isEmpty() && !txtSinopse.getText().isEmpty() && !txtGenere.getText().isEmpty() && !txtDuraction.getText().isEmpty() && !txtDirectors.getText().isEmpty()) {
+					String title = txtTitle.getText();
+					String actors = txtActors.getText();
+					String sinopse = txtSinopse.getText();
+					String genere = txtGenere.getText();
+					int duraction = Integer.parseInt(txtDuraction.getText());
+					String directors = txtDirectors.getText();
+					String classIndicative = cbClassIndic.getSelectedItem().toString();
+					
+					createFilm(title, actors, sinopse, genere, duraction, directors, classIndicative);
+				
+				
+				}else {
+					JOptionPane.showMessageDialog(null, "Por favor preencha todos os campos!");
+				}
+			}
+		});
+		
+		btnAdicionarFilme.setBounds(10, 218, 147, 23);
+		panel_6.add(btnAdicionarFilme);
+		
+		
+		JButton btnEditar_1 = new JButton("Editar");
+		btnEditar_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(tblFilm.getSelectedRow() != -1) {
+					txtTitle.setText(tblFilm.getValueAt(tblFilm.getSelectedRow(), 1).toString());
+					txtActors.setText(tblFilm.getValueAt(tblFilm.getSelectedRow(), 2).toString());
+					txtSinopse.setText(tblFilm.getValueAt(tblFilm.getSelectedRow(), 3).toString());
+					txtGenere.setText(tblFilm.getValueAt(tblFilm.getSelectedRow(), 4).toString());
+					txtDuraction.setText(tblFilm.getValueAt(tblFilm.getSelectedRow(), 5).toString());
+					txtDirectors.setText(tblFilm.getValueAt(tblFilm.getSelectedRow(), 6).toString());
+					cbClassIndic.setSelectedItem(tblFilm.getValueAt(tblFilm.getSelectedRow(), 7));
+					btnSalvar_1.setEnabled(true);
+				}
+			}
+			
+		});
+		
+		btnEditar_1.setBounds(559, 216, 89, 23);
+		panel_6.add(btnEditar_1);
+		
+		JButton btnLimparCampos_2 = new JButton("Limpar Campos");
+		btnLimparCampos_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtSinopse.setText("");
+				txtActors.setText("");
+				txtDirectors.setText("");
+				txtDuraction.setText("");
+				txtGenere.setText("");
+				txtTitle.setText("");
+				cbClassIndic.setSelectedItem(cbClassIndic.getItemAt(0));
+				
+				btnSalvar_1.setEnabled(false);
+			}
+		});
+		btnLimparCampos_2.setBounds(356, 142, 133, 23);
+		panel_8.add(btnLimparCampos_2);
 		
 		updateUserTable();
 		updateRoomTable();
+		updateTableFilm();
 		
 	}
 	
+	
+	//User
 	private void updateUserTable() {
 		DefaultTableModel model = (DefaultTableModel) tblUsers.getModel();
 		model.setNumRows(0);
@@ -463,6 +693,8 @@ public class ViewAdminBoard extends JFrame {
 		}
 	}
 	
+	
+	//Room
 	private void createRoom(int capacity, String status, int RoomNumber) {
 		RoomModel room = new RoomModel();
 		RoomController controller = new RoomController();
@@ -518,5 +750,72 @@ public class ViewAdminBoard extends JFrame {
 		controller.delete(room);
 		JOptionPane.showMessageDialog(null, "Excluido com sucesso!");
 		updateRoomTable();
+	}
+	
+	
+	//Film
+	public void createFilm(String title,  String actors, String sinopse, String genere, int duraction, String directors, String classIndicative) {
+	
+		FilmModel model = new FilmModel();
+		FilmController controller = new FilmController();
+		
+		model.setTitle(title);
+		model.setActors(actors);
+		model.setSinopse(sinopse);
+		model.setGenere(genere);
+		model.setDuraction(duraction);
+		model.setDirectors(directors);
+		model.setClassindicative(classIndicative);
+		
+		controller.Create(model);
+		JOptionPane.showMessageDialog(null, "Filme adicionado com sucesso!");
+		updateTableFilm();
+		
+	}
+	
+	public void updateTableFilm() {
+		DefaultTableModel model = (DefaultTableModel) tblFilm.getModel();
+		FilmController controller = new FilmController();
+		
+		model.setNumRows(0);
+		
+		for(FilmModel film : controller.read()) {
+			model.addRow(new Object[] {
+					film.getId(),
+					film.getTitle(),
+					film.getActors(),
+					film.getSinopse(),
+					film.getGenere(),
+					film.getDuraction(),
+					film.getDirectors(),
+					film.getClassindicative()
+			});
+		}
+	}
+	
+	public void updateFilm(int id, String title,  String actors, String sinopse, String genere, int duraction, String directors, String classIndicative) {
+		FilmModel model = new FilmModel();
+		FilmController controller = new FilmController();
+		
+		model.setId(id);
+		model.setTitle(title);
+		model.setActors(actors);
+		model.setSinopse(sinopse);
+		model.setGenere(genere);
+		model.setDuraction(duraction);
+		model.setDirectors(directors);
+		model.setClassindicative(classIndicative);
+		
+		controller.update(model);
+		updateTableFilm();
+	}
+	
+	public void deleteFilm(int id) {
+		FilmModel model = new FilmModel();
+		FilmController controller = new FilmController();
+		
+		model.setId(id);
+		controller.delete(model);
+		updateTableFilm();
 	}
 }

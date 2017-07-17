@@ -817,5 +817,6 @@ public class ViewAdminBoard extends JFrame {
 		model.setId(id);
 		controller.delete(model);
 		updateTableFilm();
+		
 	}
 }

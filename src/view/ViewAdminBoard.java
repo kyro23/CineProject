@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import model.FilmModel;
+import model.FilmSessionModel;
 import model.RoomModel;
 import model.UserModel;
 import java.awt.BorderLayout;
@@ -18,19 +19,25 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import controller.FilmController;
+import controller.FilmSessionController;
 import controller.RoomController;
 import controller.UserController;
 
 import javax.swing.JTextField;
+import javax.swing.SpinnerDateModel;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.border.TitledBorder;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.Toolkit;
 import javax.swing.JTextArea;
+import javax.swing.JSpinner;
+import java.util.Date;
 
 public class ViewAdminBoard extends JFrame {
 
@@ -55,7 +62,9 @@ public class ViewAdminBoard extends JFrame {
 	private JTextField txtGenere;
 	private JTextField txtDuraction;
 	private JTextField txtDirectors;
-
+	private JTable tblSessions;
+	private JComboBox<Object> cbFilm;
+	private JComboBox<Object> cbRoom;
 	/**
 	 * Launch the application.
 	 */
@@ -576,9 +585,266 @@ public class ViewAdminBoard extends JFrame {
 		btnLimparCampos_2.setBounds(356, 142, 133, 23);
 		panel_8.add(btnLimparCampos_2);
 		
+		JPanel panel_9 = new JPanel();
+		tabbedPane.addTab("Sess\u00F5es", new ImageIcon(ViewAdminBoard.class.getResource("/images/film_add.png")), panel_9, null);
+		panel_9.setLayout(null);
+		
+		JPanel panel_10 = new JPanel();
+		panel_10.setBounds(0, 0, 768, 234);
+		panel_9.add(panel_10);
+		panel_10.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane scrollPane_3 = new JScrollPane();
+		panel_10.add(scrollPane_3, BorderLayout.CENTER);
+		
+		tblSessions = new JTable();
+		tblSessions.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null, null, null, null, null},
+			},
+			new String[] {
+				"ID", "Filme", "Dia", "Hora", "Sala", "Tipo", "Dimens\u00E3o", "Status"
+			}
+		));
+		tblSessions.getColumnModel().getColumn(1).setResizable(false);
+		tblSessions.getColumnModel().getColumn(2).setResizable(false);
+		tblSessions.getColumnModel().getColumn(3).setResizable(false);
+		tblSessions.getColumnModel().getColumn(4).setResizable(false);
+		tblSessions.getColumnModel().getColumn(5).setResizable(false);
+		tblSessions.getColumnModel().getColumn(6).setResizable(false);
+		tblSessions.getColumnModel().getColumn(7).setResizable(false);
+		scrollPane_3.setViewportView(tblSessions);
+	
+		
+		JPanel panel_11 = new JPanel();
+		panel_11.setBorder(new TitledBorder(null, "Sess\u00E3o", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_11.setBounds(0, 279, 768, 175);
+		panel_9.add(panel_11);
+		panel_11.setLayout(null);
+		
+		cbFilm = new JComboBox<Object>();
+		fillCbFilm();
+		cbFilm.setBounds(92, 25, 155, 20);
+		panel_11.add(cbFilm);
+		
+		JLabel lblFilme = new JLabel("Filme");
+		lblFilme.setBounds(36, 28, 46, 14);
+		panel_11.add(lblFilme);
+		
+		JLabel lblData = new JLabel("Data");
+		lblData.setBounds(36, 59, 46, 14);
+		panel_11.add(lblData);
+		
+		
+		JLabel lblHora = new JLabel("Hora");
+		lblHora.setBounds(36, 90, 46, 14);
+		panel_11.add(lblHora);
+		
+		cbRoom = new JComboBox<Object>();
+		cbRoom.setBounds(418, 25, 64, 20);
+		panel_11.add(cbRoom);
+		
+		JLabel lblSala = new JLabel("Sala");
+		lblSala.setBounds(362, 28, 46, 14);
+		panel_11.add(lblSala);
+		
+		JComboBox<Object> cbType = new JComboBox<Object>();
+		cbType.setModel(new DefaultComboBoxModel<Object>(new String[] {"Dublado", "Legendado"}));
+		cbType.setBounds(418, 56, 92, 20);
+		panel_11.add(cbType);
+		
+		JLabel lblTipo = new JLabel("Tipo");
+		lblTipo.setBounds(362, 59, 46, 14);
+		panel_11.add(lblTipo);
+		
+		JComboBox<Object> cbDimension = new JComboBox<Object>();
+		cbDimension.setModel(new DefaultComboBoxModel<Object>(new String[] {"2D", "3D"}));
+		cbDimension.setBounds(642, 25, 71, 20);
+		panel_11.add(cbDimension);
+		
+		JLabel lblDimenso = new JLabel("Dimens\u00E3o");
+		lblDimenso.setBounds(561, 28, 71, 14);
+		panel_11.add(lblDimenso);
+		
+		JComboBox<Object> cbSessionStatus = new JComboBox<Object>();
+		cbSessionStatus.setModel(new DefaultComboBoxModel<Object>(new String[] {"Aberta", "Encerrada"}));
+		cbSessionStatus.setBounds(644, 59, 92, 20);
+		panel_11.add(cbSessionStatus);
+		
+		JLabel lblStatus = new JLabel("Status");
+		lblStatus.setBounds(561, 59, 61, 14);
+		panel_11.add(lblStatus);
+
+				
+		JSpinner spnDay = new JSpinner();
+		spnDay.setModel(new SpinnerDateModel());
+		spnDay.setEditor(new JSpinner.DateEditor(spnDay, "dd/MM/yyyy"));
+		
+		spnDay.setBounds(92, 56, 155, 20);
+		panel_11.add(spnDay);
+		
+		JSpinner spnHour = new JSpinner();
+		spnHour.setModel(new SpinnerDateModel());
+		spnHour.setEditor(new JSpinner.DateEditor(spnHour, "HH:mm"));
+		
+		spnHour.setBounds(92, 87, 71, 20);
+		panel_11.add(spnHour);
+		
+		JButton btnSalvar_2 = new JButton("Salvar");
+		btnSalvar_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(tblSessions.getSelectedRow() != -1) {
+					int id = Integer.parseInt(tblSessions.getValueAt(tblSessions.getSelectedRow(), 0).toString());
+					Date dayValue = (Date) spnDay.getValue();
+					Date hourValue = (Date) spnHour.getValue();
+					
+					FilmModel film = (FilmModel) cbFilm.getSelectedItem();
+					RoomModel room = (RoomModel) cbRoom.getSelectedItem();
+					
+					
+					String type = (String) cbType.getSelectedItem();
+					String dimension = (String) cbDimension.getSelectedItem();
+					String sessionStatus = (String) cbSessionStatus.getSelectedItem();
+					
+					java.sql.Date day = new java.sql.Date(dayValue.getTime());
+					java.sql.Time hour = new java.sql.Time(hourValue.getTime());
+					
+					updateSession(id, film, day, hour, room, type, dimension, sessionStatus);
+					
+					
+					btnSalvar_2.setEnabled(false);
+				}
+			}
+		});
+		btnSalvar_2.setBounds(241, 128, 89, 23);
+		panel_11.add(btnSalvar_2);
+		
+		btnSalvar_2.setEnabled(false);
+		
+		JButton btnAdicionarSesso = new JButton("Adicionar Sess\u00E3o");
+		btnAdicionarSesso.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {				
+				Date dayValue = (Date) spnDay.getValue();
+				Date hourValue = (Date) spnHour.getValue();
+				
+				FilmModel film = (FilmModel) cbFilm.getSelectedItem();
+				RoomModel room = (RoomModel) cbRoom.getSelectedItem();
+				
+				
+				String type = (String) cbType.getSelectedItem();
+				String dimension = (String) cbDimension.getSelectedItem();
+				String sessionStatus = (String) cbSessionStatus.getSelectedItem();
+				
+				java.sql.Date day = new java.sql.Date(dayValue.getTime());
+				java.sql.Time hour = new java.sql.Time(hourValue.getTime());
+				
+				createSession(film, day, hour, room, type, dimension, sessionStatus);	
+			}
+		});
+		
+		JButton btnLimparCampos_3 = new JButton("Zerar Campos");
+		btnLimparCampos_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Date today = new Date();
+				
+				
+				spnDay.setValue(today);
+				spnHour.setValue(today);
+				cbFilm.setSelectedIndex(0);
+				cbRoom.setSelectedIndex(0);
+				cbDimension.setSelectedIndex(0);
+				cbType.setSelectedIndex(0);
+				cbSessionStatus.setSelectedIndex(0);
+				
+				btnSalvar_2.setEnabled(false);
+			}
+		});
+		btnLimparCampos_3.setBounds(340, 128, 148, 23);
+		panel_11.add(btnLimparCampos_3);
+		
+		btnAdicionarSesso.setBounds(10, 245, 151, 23);
+		panel_9.add(btnAdicionarSesso);
+		
+		JButton btnExcluir_1 = new JButton("Excluir");
+		btnExcluir_1.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(tblSessions.getSelectedRow() != -1) {
+					int id = Integer.parseInt(tblSessions.getValueAt(tblSessions.getSelectedRow(), 0).toString());
+					
+					deleteSession(id);
+					JOptionPane.showMessageDialog(null, "Deletado com sucesso!");
+				}
+			}
+		});
+		btnExcluir_1.setBounds(669, 245, 89, 23);
+		panel_9.add(btnExcluir_1);
+		
+		JButton btnEditar_2 = new JButton("Editar");
+		btnEditar_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(tblSessions.getSelectedRow() != -1) {
+					SimpleDateFormat sdfD = new SimpleDateFormat("dd/MM/yyyy");
+					SimpleDateFormat sdfH = new SimpleDateFormat("HH:mm");
+					
+					FilmModel film = (FilmModel) tblSessions.getValueAt(tblSessions.getSelectedRow(), 1);
+					RoomModel room = (RoomModel) tblSessions.getValueAt(tblSessions.getSelectedRow(), 4);
+					
+					Date day = null;
+					Date hour = null;
+					
+					String type = tblSessions.getValueAt(tblSessions.getSelectedRow(), 5).toString();
+					String dimension = tblSessions.getValueAt(tblSessions.getSelectedRow(), 6).toString();
+					String sessionStatus = tblSessions.getValueAt(tblSessions.getSelectedRow(), 7).toString();
+					
+					try {
+						day = sdfD.parse(tblSessions.getValueAt(tblSessions.getSelectedRow(), 2).toString());
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+
+					try {
+						hour = sdfH.parse(tblSessions.getValueAt(tblSessions.getSelectedRow(), 3).toString());
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+					spnHour.setValue(hour);
+					spnDay.setValue(day);
+					cbSessionStatus.setSelectedItem(sessionStatus);
+					cbDimension.setSelectedItem(dimension);
+					cbType.setSelectedItem(type);
+					
+					for(int i = 0; i < cbFilm.getItemCount(); i++) {
+						if(cbFilm.getItemAt(i).toString().equals(film.toString())) {
+							cbFilm.setSelectedIndex(i);
+						}
+					}
+
+					for(int i = 0; i < cbRoom.getItemCount(); i++) {
+						if(cbRoom.getItemAt(i).toString().equals(room.toString())) {
+							cbRoom.setSelectedIndex(i);
+						}
+					}
+					
+					btnSalvar_2.setEnabled(true);
+				}
+			}
+		});
+		btnEditar_2.setBounds(570, 245, 89, 23);
+		panel_9.add(btnEditar_2);
+		
 		updateUserTable();
 		updateRoomTable();
 		updateTableFilm();
+		fillCbRoom();
+		fillCbFilm();
+		updateTableSession();
 		
 	}
 	
@@ -707,6 +973,7 @@ public class ViewAdminBoard extends JFrame {
 		updateRoomTable();
 		txtRoomNumber.setText("");
 		txtCapacity.setText("");
+		fillCbRoom();
 	}
 	
 	private void updateRoomTable() {
@@ -740,21 +1007,28 @@ public class ViewAdminBoard extends JFrame {
 		txtRoomNumber.setText("");
 		
 		JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
+		fillCbRoom();
 	}
 	
 	private void deleteRoom(int id) {
 		RoomModel room = new RoomModel();
 		RoomController controller = new RoomController();
+		FilmSessionController sessionController = new FilmSessionController();
+		
+		for(FilmSessionModel session : sessionController.findSessionByRoom(id)) {
+			deleteSession(session.getId());
+		}
 		
 		room.setId(id);
 		controller.delete(room);
 		JOptionPane.showMessageDialog(null, "Excluido com sucesso!");
 		updateRoomTable();
+		fillCbRoom();
 	}
 	
 	
 	//Film
-	public void createFilm(String title,  String actors, String sinopse, String genere, int duraction, String directors, String classIndicative) {
+	private void createFilm(String title,  String actors, String sinopse, String genere, int duraction, String directors, String classIndicative) {
 	
 		FilmModel model = new FilmModel();
 		FilmController controller = new FilmController();
@@ -770,10 +1044,11 @@ public class ViewAdminBoard extends JFrame {
 		controller.Create(model);
 		JOptionPane.showMessageDialog(null, "Filme adicionado com sucesso!");
 		updateTableFilm();
+		fillCbFilm();
 		
 	}
 	
-	public void updateTableFilm() {
+	private void updateTableFilm() {
 		DefaultTableModel model = (DefaultTableModel) tblFilm.getModel();
 		FilmController controller = new FilmController();
 		
@@ -793,7 +1068,7 @@ public class ViewAdminBoard extends JFrame {
 		}
 	}
 	
-	public void updateFilm(int id, String title,  String actors, String sinopse, String genere, int duraction, String directors, String classIndicative) {
+	private void updateFilm(int id, String title,  String actors, String sinopse, String genere, int duraction, String directors, String classIndicative) {
 		FilmModel model = new FilmModel();
 		FilmController controller = new FilmController();
 		
@@ -808,15 +1083,131 @@ public class ViewAdminBoard extends JFrame {
 		
 		controller.update(model);
 		updateTableFilm();
+		fillCbFilm();
 	}
 	
-	public void deleteFilm(int id) {
+	private void deleteFilm(int id) {
 		FilmModel model = new FilmModel();
 		FilmController controller = new FilmController();
+		
+		FilmSessionController sessionController = new FilmSessionController();
+		
+		for(FilmSessionModel session : sessionController.findFilms(id)) {
+			deleteSession(session.getId());
+		}
 		
 		model.setId(id);
 		controller.delete(model);
 		updateTableFilm();
+		fillCbFilm();
+	}
+	
+	//Session
+	private void fillCbFilm() {
+		FilmController controller = new FilmController();
 		
+		cbFilm.removeAllItems();
+	
+		for(FilmModel film : controller.read()) {
+			cbFilm.addItem(film);
+		}
+	}
+	
+	private void fillCbRoom() {
+		RoomController controller = new RoomController();
+		
+		cbRoom.removeAllItems();
+		
+		for(RoomModel room : controller.read()) {
+			
+			cbRoom.addItem(room);
+		}
+	}
+	
+	private void createSession(FilmModel film, java.sql.Date day, java.sql.Time hour, RoomModel room, String type, String dimension, String sessionStatus) {
+		FilmSessionModel model = new FilmSessionModel();
+		FilmSessionController controller = new FilmSessionController();
+		
+		model.setFilm(film.getId());
+		model.setDay(day);
+		model.setHour(hour);
+		model.setRoom(room.getId());
+		model.setType(type);
+		model.setDimension(dimension);
+		model.setSessionStatus(sessionStatus);
+		
+		controller.create(model);
+		JOptionPane.showMessageDialog(null, "Sessão criada com sucesso!");	
+		updateTableSession();
+	}
+	
+	private void updateTableSession() {
+		SimpleDateFormat sdfD = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat sdfH = new SimpleDateFormat("HH:mm");
+		
+		FilmController filmController = new FilmController();
+		RoomController roomController = new RoomController();
+		
+		DefaultTableModel model = (DefaultTableModel) tblSessions.getModel();
+		FilmSessionController controller = new FilmSessionController();
+		
+		model.setNumRows(0);
+		
+		for(FilmSessionModel session : controller.read()) {
+			int id = session.getId();
+			int filmId = session.getFilm();
+			
+			Date getDay = session.getDay();
+			String day = sdfD.format(getDay);
+			
+			Date getHour = session.getHour();
+			String hour = sdfH.format(getHour);
+			
+			int roomId = session.getRoom();
+			String type = session.getType();
+			String dimension = session.getDimension();
+			String sessionStatus = session.getSessionStatus();
+			
+			FilmModel film = filmController.findById(filmId);
+			RoomModel room = roomController.findById(roomId);
+			
+			model.addRow(new Object[] {
+					id,
+					film,
+					day,
+					hour,
+					room,
+					type,
+					dimension,
+					sessionStatus
+			});
+		}
+	}
+	
+	public void updateSession(int id, FilmModel film, java.sql.Date day, java.sql.Time hour, RoomModel room, String type, String dimension, String sessionStatus) {
+		FilmSessionModel model = new FilmSessionModel();
+		FilmSessionController controller = new FilmSessionController();
+		
+		model.setId(id);
+		model.setDay(day);
+		model.setHour(hour);
+		model.setRoom(room.getId());
+		model.setFilm(film.getId());
+		model.setType(type);
+		model.setDimension(dimension);
+		model.setSessionStatus(sessionStatus);
+		
+		controller.update(model);
+		updateTableSession();
+		JOptionPane.showMessageDialog(null, "atualizado com sucesso!");
+	}
+	
+	public void deleteSession(int id) {
+		FilmSessionModel model = new FilmSessionModel();
+		FilmSessionController controller = new FilmSessionController();
+		
+		model.setId(id);
+		controller.delete(model);
+		updateTableSession();
 	}
 }

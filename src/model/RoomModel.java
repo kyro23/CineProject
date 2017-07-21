@@ -34,5 +34,9 @@ public class RoomModel {
 		this.roomNumer = roomNumer;
 	}
 	
-
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return Integer.toString(getRoomNumer());
+	}
 }

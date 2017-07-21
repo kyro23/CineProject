@@ -115,4 +115,37 @@ public class FilmController {
 			ConnectionFactory.closeConnection(con, stmt);
 		}
 	}
+	
+	public FilmModel findById(int id) {
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		FilmModel film = new FilmModel();
+		
+		try {
+			stmt = con.prepareStatement("SELECT * FROM film WHERE id = ?");
+			stmt.setInt(1, id);
+			
+			rs = stmt.executeQuery();
+			if(rs.next()) {
+				film.setId(rs.getInt("id"));
+				film.setTitle(rs.getString("title"));
+				film.setActors(rs.getString("actors"));
+				film.setSinopse(rs.getString("sinopse"));
+				film.setGenere(rs.getString("genere"));
+				film.setDuraction(rs.getInt("duraction"));
+				film.setDirectors(rs.getString("directors"));
+				film.setClassindicative(rs.getString("classIndicative"));
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			ConnectionFactory.closeConnection(con, stmt, rs);
+		}
+		
+		return film;
+	}
 }

@@ -99,4 +99,32 @@ public class RoomController {
 			ConnectionFactory.closeConnection(con, stmt);
 		}
 	}
+	
+	public RoomModel findById(int id){
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		RoomModel room = new RoomModel();
+		
+		try {
+			stmt = con.prepareStatement("SELECT * FROM cineroom WHERE id = ?");
+			stmt.setInt(1, id);
+			
+			rs = stmt.executeQuery();
+			if(rs.next()) {
+				room.setId(rs.getInt("id"));
+				room.setCapacity(rs.getInt("capacity"));
+				room.setStatus(rs.getString("status"));
+				room.setRoomNumer(rs.getInt("roomNumber"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			ConnectionFactory.closeConnection(con, stmt, rs);
+		}
+		
+		return room;
+	}
 }

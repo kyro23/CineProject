@@ -184,4 +184,35 @@ public class FilmSessionController {
 		
 		return sessions;
 	}
+	
+	public FilmSessionModel findById(int id) {
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		FilmSessionModel session = new FilmSessionModel();
+		
+		try {
+			stmt = con.prepareStatement("SELECT * FROM filmsession WHERE id = ?");
+			stmt.setInt(1, id);
+			
+			rs = stmt.executeQuery();
+			
+			if(rs.next()) {
+				session.setId(rs.getInt("id"));
+				session.setFilm(rs.getInt("film"));
+				session.setDay(rs.getDate("day"));
+				session.setHour(rs.getTime("hour"));
+				session.setRoom(rs.getInt("room"));
+				session.setType(rs.getString("type"));
+				session.setDimension(rs.getString("dimension"));
+				session.setSessionStatus(rs.getString("sessionStatus"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return session;
+	}
 }

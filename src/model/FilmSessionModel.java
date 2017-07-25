@@ -69,4 +69,10 @@ public class FilmSessionModel {
 	public void setDimension(String dimension) {
 		this.dimension = dimension;
 	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return Integer.toString(id);
+	}
 }

@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import model.FilmModel;
 import model.FilmSessionModel;
 import model.RoomModel;
+import model.TicketsOnSaleModel;
 import model.UserModel;
 import java.awt.BorderLayout;
 
@@ -21,6 +22,7 @@ import javax.swing.table.DefaultTableModel;
 import controller.FilmController;
 import controller.FilmSessionController;
 import controller.RoomController;
+import controller.TicketsOnSaleController;
 import controller.UserController;
 
 import javax.swing.JTextField;
@@ -65,6 +67,10 @@ public class ViewAdminBoard extends JFrame {
 	private JTable tblSessions;
 	private JComboBox<Object> cbFilm;
 	private JComboBox<Object> cbRoom;
+	private JTable tblTickets;
+	
+	private JComboBox<Object> cbSession;
+	private JTextField txtPriece;
 	/**
 	 * Launch the application.
 	 */
@@ -839,13 +845,170 @@ public class ViewAdminBoard extends JFrame {
 		btnEditar_2.setBounds(570, 245, 89, 23);
 		panel_9.add(btnEditar_2);
 		
+		JPanel panel_12 = new JPanel();
+		tabbedPane.addTab("Ingressos \u00E0 venda", new ImageIcon(ViewAdminBoard.class.getResource("/images/film_edit.png")), panel_12, null);
+		panel_12.setLayout(null);
+		
+		JPanel panel_13 = new JPanel();
+		panel_13.setBounds(0, 0, 768, 230);
+		panel_12.add(panel_13);
+		panel_13.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane scrollPane_4 = new JScrollPane();
+		panel_13.add(scrollPane_4, BorderLayout.CENTER);
+		
+		tblTickets = new JTable();
+		tblTickets.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null},
+			},
+			new String[] {
+				"Id", "Sess\u00E3o", "Pre\u00E7o", "Quantidade"
+			}
+		) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		tblTickets.getColumnModel().getColumn(0).setResizable(false);
+		tblTickets.getColumnModel().getColumn(1).setResizable(false);
+		tblTickets.getColumnModel().getColumn(2).setResizable(false);
+		tblTickets.getColumnModel().getColumn(3).setResizable(false);
+		scrollPane_4.setViewportView(tblTickets);
+		
+		JPanel panel_14 = new JPanel();
+		panel_14.setBorder(new TitledBorder(null, "Ingresso", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_14.setBounds(0, 286, 768, 168);
+		panel_12.add(panel_14);
+		panel_14.setLayout(null);
+		
+		cbSession = new JComboBox<Object>();
+		cbSession.setBounds(235, 62, 98, 20);
+		panel_14.add(cbSession);
+		
+		JLabel lblSesso = new JLabel("Sess\u00E3o");
+		lblSesso.setBounds(172, 65, 53, 14);
+		panel_14.add(lblSesso);
+		
+		JLabel lblPreo = new JLabel("Pre\u00E7o");
+		lblPreo.setBounds(502, 65, 46, 14);
+		panel_14.add(lblPreo);
+		
+		JLabel lblAtencao = new JLabel("Aten\u00E7\u00E3o: A quantidade de ingressos ser\u00E1 equivalente a quantidade de cadeiras da sala");
+		lblAtencao.setBounds(124, 11, 528, 14);
+		panel_14.add(lblAtencao);
+		
+		JButton btnSalvarEdicao = new JButton("Salvar edi\u00E7\u00E3o");
+		btnSalvarEdicao.setBounds(235, 122, 118, 23);
+		btnSalvarEdicao.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(tblTickets.getSelectedRow() != -1) {
+					int id = Integer.parseInt(tblTickets.getValueAt(tblTickets.getSelectedRow(), 0).toString());
+					FilmSessionModel session = (FilmSessionModel) cbSession.getSelectedItem();
+					double priece = Double.parseDouble(txtPriece.getText().replace(',', '.'));
+					int quantity = Integer.parseInt(tblTickets.getValueAt(tblTickets.getSelectedRow(), 3).toString());
+					
+					updateTickets(id, session, priece, quantity);
+					
+					btnSalvarEdicao.setEnabled(false);
+				}
+			}
+		});
+		panel_14.add(btnSalvarEdicao);
+		
+		btnSalvarEdicao.setEnabled(false);
+		
+		JButton btnLimpar = new JButton("Limpar");
+		btnLimpar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				txtPriece.setText("");
+				btnSalvarEdicao.setEnabled(false);
+			}
+		});
+		btnLimpar.setBounds(401, 122, 89, 23);
+		panel_14.add(btnLimpar);
+		
+		txtPriece = new JTextField();
+		txtPriece.setBounds(558, 62, 89, 20);
+		panel_14.add(txtPriece);
+		txtPriece.setColumns(10);
+		
+		JButton btnAdicionarIngresso = new JButton("Adicionar Ingresso");
+		btnAdicionarIngresso.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!txtPriece.getText().isEmpty()) {
+				FilmSessionModel session = (FilmSessionModel) cbSession.getSelectedItem();
+				double priece = Double.parseDouble(txtPriece.getText().replace(',', '.'));
+				
+				createTicketsOnSale(session, priece);
+				txtPriece.setText("");
+			
+				}
+			}
+		});
+		btnAdicionarIngresso.setBounds(24, 241, 158, 23);
+		panel_12.add(btnAdicionarIngresso);
+		
+		JButton btnEditarIngresso = new JButton("Editar");
+		btnEditarIngresso.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(tblTickets.getSelectedRow() != -1) {
+					txtPriece.setText(tblTickets.getValueAt(tblTickets.getSelectedRow(), 2).toString().replace('.', ','));
+					
+					for(int i = 0; i < cbSession.getItemCount(); i++) {
+						if(cbSession.getItemAt(i).toString().equals(tblTickets.getValueAt(tblTickets.getSelectedRow(), 1).toString())) {
+							cbSession.setSelectedIndex(i);
+						}
+					}
+					
+					btnSalvarEdicao.setEnabled(true);
+				}
+			}
+		});
+		btnEditarIngresso.setBounds(570, 241, 89, 23);
+		panel_12.add(btnEditarIngresso);
+		
+		JButton btnExcluiringresso = new JButton("Excluir");
+		btnExcluiringresso.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(tblTickets.getSelectedRow() != -1) {
+					int id = Integer.parseInt(tblTickets.getValueAt(tblTickets.getSelectedRow(), 0).toString());
+					deleteTicket(id);
+					
+				}
+			}
+		});
+		btnExcluiringresso.setBounds(669, 241, 89, 23);
+		panel_12.add(btnExcluiringresso);
+		
 		updateUserTable();
+		
 		updateRoomTable();
+		
 		updateTableFilm();
+		
 		fillCbRoom();
 		fillCbFilm();
 		updateTableSession();
 		
+		fillCbSession();
+		updateTicketsTable();
 	}
 	
 	
@@ -1115,7 +1278,6 @@ public class ViewAdminBoard extends JFrame {
 	
 	private void fillCbRoom() {
 		RoomController controller = new RoomController();
-		
 		cbRoom.removeAllItems();
 		
 		for(RoomModel room : controller.read()) {
@@ -1139,6 +1301,7 @@ public class ViewAdminBoard extends JFrame {
 		controller.create(model);
 		JOptionPane.showMessageDialog(null, "Sessão criada com sucesso!");	
 		updateTableSession();
+		fillCbSession();
 	}
 	
 	private void updateTableSession() {
@@ -1184,7 +1347,7 @@ public class ViewAdminBoard extends JFrame {
 		}
 	}
 	
-	public void updateSession(int id, FilmModel film, java.sql.Date day, java.sql.Time hour, RoomModel room, String type, String dimension, String sessionStatus) {
+	private void updateSession(int id, FilmModel film, java.sql.Date day, java.sql.Time hour, RoomModel room, String type, String dimension, String sessionStatus) {
 		FilmSessionModel model = new FilmSessionModel();
 		FilmSessionController controller = new FilmSessionController();
 		
@@ -1200,14 +1363,87 @@ public class ViewAdminBoard extends JFrame {
 		controller.update(model);
 		updateTableSession();
 		JOptionPane.showMessageDialog(null, "atualizado com sucesso!");
+		fillCbSession();
 	}
 	
-	public void deleteSession(int id) {
+	private void deleteSession(int id) {
 		FilmSessionModel model = new FilmSessionModel();
 		FilmSessionController controller = new FilmSessionController();
 		
 		model.setId(id);
 		controller.delete(model);
 		updateTableSession();
+		fillCbSession();
+		updateTicketsTable();
+	}
+	
+	//Tickets on Sale
+	private void fillCbSession() {
+		FilmSessionController sessionController = new FilmSessionController();
+		
+		cbSession.removeAllItems();
+		
+		for(FilmSessionModel sessionModel : sessionController.read()) {
+			cbSession.addItem(sessionModel);
+		}
+	}
+	
+	private void createTicketsOnSale(FilmSessionModel session, double priece) {
+		TicketsOnSaleModel model = new TicketsOnSaleModel();
+		TicketsOnSaleController controller = new TicketsOnSaleController();
+		
+		RoomController roomController = new RoomController();
+		RoomModel roomModel = roomController.findById(session.getRoom());
+		
+		model.setSessionId(session.getId());
+		model.setPriece(priece);
+		model.setQuantity(roomModel.getCapacity());
+		
+		controller.create(model);
+		JOptionPane.showMessageDialog(null, "Ingresso adicionado com sucesso!");
+		updateTicketsTable();
+	}
+	
+	private void updateTicketsTable(){
+		DefaultTableModel tModel = (DefaultTableModel) tblTickets.getModel();
+		TicketsOnSaleController controller = new TicketsOnSaleController();
+		
+		
+		tModel.setNumRows(0);
+		for(TicketsOnSaleModel tickets : controller.read()) {
+			
+			
+			tModel.addRow(new Object[] {
+				tickets.getId(),
+				tickets.getSessionId(),
+				tickets.getPriece(),
+				tickets.getQuantity()
+			});
+		}
+	}
+	
+	private void updateTickets(int id, FilmSessionModel session, double priece, int quantity) {
+		TicketsOnSaleModel model = new TicketsOnSaleModel();
+		TicketsOnSaleController controller = new TicketsOnSaleController();
+		
+		model.setId(id);
+		model.setSessionId(session.getId());
+		model.setPriece(priece);
+		model.setQuantity(quantity);
+		
+		controller.update(model);
+		JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
+		updateTicketsTable();
+		txtPriece.setText("");
+	}
+	
+	private void deleteTicket(int id) {
+		TicketsOnSaleModel model = new TicketsOnSaleModel();
+		TicketsOnSaleController controller = new TicketsOnSaleController();
+		
+		model.setId(id);
+		controller.delete(model);
+		JOptionPane.showMessageDialog(null, "Excluído com sucesso!");
+		updateTicketsTable();
 	}
 }

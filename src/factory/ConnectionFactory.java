@@ -8,10 +8,12 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
+
 public class ConnectionFactory {
 	private static final String DRIVER = "com.mysql.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://localhost:3306/cinema";
-	private static final String USERNAME = "root";
+	private static final String URL = "jdbc:mysql://192.168.0.4:3306/cinema";
+	private static final String USERNAME = "DBMananger";
 	private static final String PASSWORD = "";
 	
 	public static Connection getConnection() {
@@ -19,6 +21,7 @@ public class ConnectionFactory {
 			Class.forName(DRIVER);
 			return DriverManager.getConnection(URL, USERNAME, PASSWORD);
 		}catch(ClassNotFoundException | SQLException ex) {
+			JOptionPane.showMessageDialog(null, "Não é possivel estabelecer conexão com o banco de dados, favor contate o administrador");
 			throw new RuntimeException("DEU MERDA:", ex);
 		}
 	}

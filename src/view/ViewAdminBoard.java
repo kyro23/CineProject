@@ -1019,6 +1019,10 @@ public class ViewAdminBoard extends JFrame {
 				"Id", "Tipo", "Valor", "Ingresso"
 			}
 		) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			boolean[] columnEditables = new boolean[] {
 				false, false, false, false
 			};

@@ -85,4 +85,19 @@ public class TicketSaleController {
 			ConnectionFactory.closeConnection(con, stmt);
 		}
 	}
+	
+	public void delete(TicketSaleModel sale) {
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		
+		try {
+			stmt = con.prepareStatement("DELETE FROM ticketSale WHERE id = ?");
+			stmt.setInt(1, sale.getId());
+		
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

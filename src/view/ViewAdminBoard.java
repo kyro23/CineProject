@@ -71,6 +71,7 @@ public class ViewAdminBoard extends JFrame {
 	
 	private JComboBox<Object> cbSession;
 	private JTextField txtPriece;
+	private JTable tblTicketSold;
 	/**
 	 * Launch the application.
 	 */
@@ -996,6 +997,40 @@ public class ViewAdminBoard extends JFrame {
 		});
 		btnExcluiringresso.setBounds(669, 241, 89, 23);
 		panel_12.add(btnExcluiringresso);
+		
+		JPanel panel_15 = new JPanel();
+		tabbedPane.addTab("Ingressos vendidos", new ImageIcon(ViewAdminBoard.class.getResource("/images/tickectIcon.png")), panel_15, null);
+		panel_15.setLayout(null);
+	
+		JPanel panel_16 = new JPanel();
+		panel_16.setBounds(0, 0, 768, 443);
+		panel_15.add(panel_16);
+		panel_16.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane scrollPane_5 = new JScrollPane();
+		panel_16.add(scrollPane_5, BorderLayout.CENTER);
+		
+		tblTicketSold = new JTable();
+		tblTicketSold.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null},
+			},
+			new String[] {
+				"Id", "Tipo", "Valor", "Ingresso"
+			}
+		) {
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		tblTicketSold.getColumnModel().getColumn(0).setResizable(false);
+		tblTicketSold.getColumnModel().getColumn(1).setResizable(false);
+		tblTicketSold.getColumnModel().getColumn(2).setResizable(false);
+		tblTicketSold.getColumnModel().getColumn(3).setResizable(false);
+		scrollPane_5.setViewportView(tblTicketSold);
 		
 		updateUserTable();
 		

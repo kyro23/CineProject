@@ -1,6 +1,12 @@
 package model;
 
 public class TicketSaleModel {
+	/*
+	 * PAY ATTENTION
+	 * this class is the registry for ONE ticket
+	 * for this will be generated one pdf to impress the ticket
+	 */
+	
 	private int id;
 	private String type;
 	private double value;

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 25-Jul-2017 às 21:43
+-- Generation Time: 31-Jul-2017 às 17:06
 -- Versão do servidor: 10.1.9-MariaDB
 -- PHP Version: 5.6.15
 
@@ -94,6 +94,19 @@ INSERT INTO `filmsession` (`id`, `film`, `day`, `hour`, `room`, `type`, `dimensi
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `ticketsale`
+--
+
+CREATE TABLE `ticketsale` (
+  `id` int(11) NOT NULL,
+  `type` enum('Meia','Inteira') DEFAULT NULL,
+  `value` double DEFAULT NULL,
+  `ticketId` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `ticketsonsale`
 --
 
@@ -158,6 +171,13 @@ ALTER TABLE `filmsession`
   ADD KEY `room` (`room`);
 
 --
+-- Indexes for table `ticketsale`
+--
+ALTER TABLE `ticketsale`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ticketId` (`ticketId`);
+
+--
 -- Indexes for table `ticketsonsale`
 --
 ALTER TABLE `ticketsonsale`
@@ -191,6 +211,11 @@ ALTER TABLE `film`
 ALTER TABLE `filmsession`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 --
+-- AUTO_INCREMENT for table `ticketsale`
+--
+ALTER TABLE `ticketsale`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
 -- AUTO_INCREMENT for table `ticketsonsale`
 --
 ALTER TABLE `ticketsonsale`
@@ -210,6 +235,12 @@ ALTER TABLE `users`
 ALTER TABLE `filmsession`
   ADD CONSTRAINT `filmsession_ibfk_1` FOREIGN KEY (`film`) REFERENCES `film` (`id`),
   ADD CONSTRAINT `filmsession_ibfk_2` FOREIGN KEY (`room`) REFERENCES `cineroom` (`id`);
+
+--
+-- Limitadores para a tabela `ticketsale`
+--
+ALTER TABLE `ticketsale`
+  ADD CONSTRAINT `ticketsale_ibfk_1` FOREIGN KEY (`ticketId`) REFERENCES `ticketsonsale` (`id`);
 
 --
 -- Limitadores para a tabela `ticketsonsale`

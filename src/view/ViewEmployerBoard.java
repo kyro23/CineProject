@@ -41,6 +41,7 @@ public class ViewEmployerBoard extends JFrame {
 	private JTable tblSessions;
 	private JTable tblTickets;
 	private JComboBox<Object> cbFilm;
+	private JComboBox<Object> cbSession;
 
 
 	/**
@@ -105,6 +106,15 @@ public class ViewEmployerBoard extends JFrame {
 		panel_1.add(panel_2);
 		panel_2.setLayout(null);
 		
+		cbFilm = new JComboBox<Object>();
+		cbFilm.setBounds(135, 59, 139, 20);
+		panel_2.add(cbFilm);
+		fillCbFilm();
+		
+		JLabel label_2 = new JLabel("Filme");
+		label_2.setBounds(79, 62, 46, 14);
+		panel_2.add(label_2);
+		
 		JComboBox<Object> cbType = new JComboBox<Object>();
 		cbType.setBounds(135, 118, 139, 20);
 		panel_2.add(cbType);
@@ -117,18 +127,12 @@ public class ViewEmployerBoard extends JFrame {
 		label_1.setBounds(79, 93, 46, 14);
 		panel_2.add(label_1);
 		
-		JComboBox<Object> cbSession = new JComboBox<Object>();
+		cbSession = new JComboBox<Object>();
 		cbSession.setBounds(135, 90, 139, 20);
 		panel_2.add(cbSession);
+		fillCbSession();
 		
-		cbFilm = new JComboBox<Object>();
-		cbFilm.setBounds(135, 59, 139, 20);
-		panel_2.add(cbFilm);
-		fillCbFilm();
-		
-		JLabel label_2 = new JLabel("Filme");
-		label_2.setBounds(79, 62, 46, 14);
-		panel_2.add(label_2);
+
 		
 		JLabel lblValor = new JLabel("Valor");
 		lblValor.setBounds(145, 149, 46, 14);
@@ -255,21 +259,17 @@ public class ViewEmployerBoard extends JFrame {
 		FilmSessionController sessionController = new FilmSessionController();
 		FilmController filmController = new FilmController();
 		cbFilm.removeAllItems();
-		
+		cbFilm.addItem("Escolha o filme");
 		for(TicketsOnSaleModel ticketModel : ticketController.read()) {
+		
 			FilmSessionModel sessionModel = sessionController.findById(ticketModel.getSessionId());
 			FilmModel filmModel = filmController.findById(sessionModel.getFilm());
 			
-			System.out.println(cbFilm.getItemCount());
-			if(cbFilm.getItemCount() != 0) {
-				for(int i = 0; i < cbFilm.getItemCount(); i++) {
-					if(!cbFilm.getItemAt(i).toString().equals(filmModel.toString())) {
-						cbFilm.addItem(filmModel);
-					}
-				}
-			}else {
-				cbFilm.addItem(filmModel);
-			}
+			cbFilm.addItem(filmModel);	
 		}
+	}
+	
+	private void fillCbSession() {
+		
 	}
 }

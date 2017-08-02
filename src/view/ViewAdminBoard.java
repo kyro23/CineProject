@@ -720,6 +720,7 @@ public class ViewAdminBoard extends JFrame {
 					
 					
 					btnSalvar_2.setEnabled(false);
+					fillCbSession();
 				}
 			}
 		});
@@ -746,6 +747,7 @@ public class ViewAdminBoard extends JFrame {
 				java.sql.Time hour = new java.sql.Time(hourValue.getTime());
 				
 				createSession(film, day, hour, room, type, dimension, sessionStatus);	
+				fillCbSession();
 			}
 		});
 		
@@ -951,11 +953,23 @@ public class ViewAdminBoard extends JFrame {
 		btnAdicionarIngresso.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!txtPriece.getText().isEmpty()) {
+				boolean haveSession = false;
+					
 				FilmSessionModel session = (FilmSessionModel) cbSession.getSelectedItem();
 				double priece = Double.parseDouble(txtPriece.getText().replace(',', '.'));
 				
-				createTicketsOnSale(session, priece);
-				txtPriece.setText("");
+				for(int i = 0; i < tblTickets.getRowCount(); i++) {
+					if(tblTickets.getValueAt(i, 1).toString().equals(session.toString())) {
+						haveSession = true;
+					}
+				}
+				if(!haveSession) {
+					createTicketsOnSale(session, priece);
+					txtPriece.setText("");
+				}else {
+					JOptionPane.showMessageDialog(null, "Já existe um ingresso para essa sessão!");
+				}
+
 			
 				}
 			}

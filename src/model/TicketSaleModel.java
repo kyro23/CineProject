@@ -39,5 +39,4 @@ public class TicketSaleModel {
 	public void setTicketId(int ticketId) {
 		this.ticketId = ticketId;
 	}
-
 }

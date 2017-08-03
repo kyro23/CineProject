@@ -31,5 +31,9 @@ public class TicketsOnSaleModel {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return Integer.toString(id);
+	}
 }

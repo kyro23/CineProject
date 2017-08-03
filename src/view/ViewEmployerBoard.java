@@ -13,7 +13,9 @@ import model.TicketsOnSaleModel;
 import model.UserModel;
 import java.awt.Toolkit;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JTabbedPane;
 import javax.swing.ImageIcon;
@@ -30,6 +32,9 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.border.TitledBorder;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.DefaultComboBoxModel;
 
 public class ViewEmployerBoard extends JFrame {
 
@@ -42,7 +47,9 @@ public class ViewEmployerBoard extends JFrame {
 	private JTable tblTickets;
 	private JComboBox<Object> cbFilm;
 	private JComboBox<Object> cbSession;
-
+	
+	private int m = 0;
+	
 
 	/**
 	 * Create the frame.
@@ -70,10 +77,10 @@ public class ViewEmployerBoard extends JFrame {
 		tblSessions = new JTable();
 		tblSessions.setModel(new DefaultTableModel(
 			new Object[][] {
-				{"", null, null, null, null, null, null, null},
+				{null, "", null, null, null, null, null, null, null},
 			},
 			new String[] {
-				"Filme", "Dia", "Hor\u00E1rio", "Sala", "Tipo", "Dimens\u00E3o", "Status", "Quantidade"
+				"id", "Filme", "Dia", "Hor\u00E1rio", "Sala", "Tipo", "Dimens\u00E3o", "Status", "Quantidade"
 			}
 		) {
 			/**
@@ -81,7 +88,7 @@ public class ViewEmployerBoard extends JFrame {
 			 */
 			private static final long serialVersionUID = 1L;
 			boolean[] columnEditables = new boolean[] {
-				false, true, true, true, true, true, true, true
+				false, true, true, true, true, true, true, true, true
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
@@ -94,6 +101,7 @@ public class ViewEmployerBoard extends JFrame {
 		tblSessions.getColumnModel().getColumn(4).setResizable(false);
 		tblSessions.getColumnModel().getColumn(5).setResizable(false);
 		tblSessions.getColumnModel().getColumn(6).setResizable(false);
+		tblSessions.getColumnModel().getColumn(7).setResizable(false);
 		scrollPane.setViewportView(tblSessions);
 		
 		JPanel panel_1 = new JPanel();
@@ -107,6 +115,15 @@ public class ViewEmployerBoard extends JFrame {
 		panel_2.setLayout(null);
 		
 		cbFilm = new JComboBox<Object>();
+
+		cbFilm.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				m++;
+				if(m > 1) {
+					fillCbSession();
+				}
+			}
+		});
 		cbFilm.setBounds(135, 59, 139, 20);
 		panel_2.add(cbFilm);
 		fillCbFilm();
@@ -116,6 +133,7 @@ public class ViewEmployerBoard extends JFrame {
 		panel_2.add(label_2);
 		
 		JComboBox<Object> cbType = new JComboBox<Object>();
+		cbType.setModel(new DefaultComboBoxModel<Object>(new String[] {"Inteira", "Meia"}));
 		cbType.setBounds(135, 118, 139, 20);
 		panel_2.add(cbType);
 		
@@ -240,8 +258,10 @@ public class ViewEmployerBoard extends JFrame {
 			RoomModel room = roomController.findById(roomId);
 			
 			int quantity = ticket.getQuantity();
+			int id = ticket.getId();
 			
 			model.addRow(new Object[] {
+					id,
 					film,
 					day,
 					hour,
@@ -258,18 +278,45 @@ public class ViewEmployerBoard extends JFrame {
 		TicketsOnSaleController ticketController = new TicketsOnSaleController();
 		FilmSessionController sessionController = new FilmSessionController();
 		FilmController filmController = new FilmController();
+		
 		cbFilm.removeAllItems();
 		cbFilm.addItem("Escolha o filme");
+		
+		List<FilmModel> films = new ArrayList<>();
+		
 		for(TicketsOnSaleModel ticketModel : ticketController.read()) {
 		
 			FilmSessionModel sessionModel = sessionController.findById(ticketModel.getSessionId());
 			FilmModel filmModel = filmController.findById(sessionModel.getFilm());
+		
+			films.add(filmModel);	
+		}
+		
+		for(int i = 0; i < films.size(); i++) {
+			cbFilm.addItem(films.get(i));
+			if(i != 0) {
 			
-			cbFilm.addItem(filmModel);	
+				if(films.get(i).toString().equals(films.get(i-1).toString())) {
+					cbFilm.removeItem(films.get(i));
+				}
+			}
 		}
 	}
 	
 	private void fillCbSession() {
-		
+		cbSession.removeAllItems();
+		cbSession.addItem("Selecione um sessão se o filme estiver selecionado");
+		if(cbFilm.getSelectedItem() != "Escolha o filme") {
+			FilmSessionController sessionController = new FilmSessionController();
+			TicketsOnSaleController ticketController = new TicketsOnSaleController();
+			
+			FilmModel film = (FilmModel) cbFilm.getSelectedItem();
+			
+			
+			for(FilmSessionModel sessionModel : sessionController.findFilms(film.getId())) {
+				TicketsOnSaleModel ticketModel = ticketController.findBySession(sessionModel);
+				cbSession.addItem(ticketModel);
+			}
+		}
 	}
 }

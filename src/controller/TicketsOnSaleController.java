@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import factory.ConnectionFactory;
+import model.FilmSessionModel;
 import model.TicketsOnSaleModel;
 
 public class TicketsOnSaleController {
@@ -97,5 +98,33 @@ public class TicketsOnSaleController {
 		}finally {
 			ConnectionFactory.closeConnection(con, stmt);
 		}
+	}
+	
+	public TicketsOnSaleModel findBySession(FilmSessionModel session) {
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		TicketsOnSaleModel ticket = new TicketsOnSaleModel();
+		
+		try {
+			stmt = con.prepareStatement("SELECT * FROM ticketsonsale WHERE sessionId = ?");
+			stmt.setInt(1, session.getId());
+			
+			rs = stmt.executeQuery();
+			if(rs.next()) {
+				ticket.setId(rs.getInt("id"));
+				ticket.setSessionId(rs.getInt("sessionId"));
+				ticket.setPriece(rs.getDouble("priece"));
+				ticket.setQuantity(rs.getInt("quantity"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			ConnectionFactory.closeConnection(con, stmt, rs);
+		}
+		
+		return ticket;
 	}
 }

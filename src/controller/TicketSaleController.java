@@ -98,6 +98,8 @@ public class TicketSaleController {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}finally {
+			ConnectionFactory.closeConnection(con, stmt);
 		}
 	}
 }

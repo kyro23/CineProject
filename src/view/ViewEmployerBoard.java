@@ -133,6 +133,14 @@ public class ViewEmployerBoard extends JFrame {
 		panel_2.add(label_2);
 		
 		JComboBox<Object> cbType = new JComboBox<Object>();
+		cbType.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(cbFilm.getSelectedItem().toString() != "Selecione um sessão se o filme estiver selecionado") {
+					
+					
+				}
+			}
+		});
 		cbType.setModel(new DefaultComboBoxModel<Object>(new String[] {"Inteira", "Meia"}));
 		cbType.setBounds(135, 118, 139, 20);
 		panel_2.add(cbType);

@@ -1,0 +1,131 @@
+[33mcommit 1aa103cdbc80f171e30b322399185298ac6bef63[m
+Author: Kyro23 <cassiano.jr.2009@hotmail.com>
+Date:   Wed Aug 2 12:34:14 2017 -0300
+
+    Fixed bug when create session
+
+[1mdiff --git a/src/view/ViewAdminBoard.java b/src/view/ViewAdminBoard.java[m
+[1mindex 31f93a4..b0e6628 100644[m
+[1m--- a/src/view/ViewAdminBoard.java[m
+[1m+++ b/src/view/ViewAdminBoard.java[m
+[36m@@ -720,6 +720,7 @@[m [mpublic class ViewAdminBoard extends JFrame {[m
+ 					[m
+ 					[m
+ 					btnSalvar_2.setEnabled(false);[m
+[32m+[m					[32mfillCbSession();[m
+ 				}[m
+ 			}[m
+ 		});[m
+[36m@@ -746,6 +747,7 @@[m [mpublic class ViewAdminBoard extends JFrame {[m
+ 				java.sql.Time hour = new java.sql.Time(hourValue.getTime());[m
+ 				[m
+ 				createSession(film, day, hour, room, type, dimension, sessionStatus);	[m
+[32m+[m				[32mfillCbSession();[m
+ 			}[m
+ 		});[m
+ 		[m
+[36m@@ -951,11 +953,23 @@[m [mpublic class ViewAdminBoard extends JFrame {[m
+ 		btnAdicionarIngresso.addActionListener(new ActionListener() {[m
+ 			public void actionPerformed(ActionEvent e) {[m
+ 				if(!txtPriece.getText().isEmpty()) {[m
+[32m+[m				[32mboolean haveSession = false;[m
+[32m+[m[41m					[m
+ 				FilmSessionModel session = (FilmSessionModel) cbSession.getSelectedItem();[m
+ 				double priece = Double.parseDouble(txtPriece.getText().replace(',', '.'));[m
+ 				[m
+[31m-				createTicketsOnSale(session, priece);[m
+[31m-				txtPriece.setText("");[m
+[32m+[m				[32mfor(int i = 0; i < tblTickets.getRowCount(); i++) {[m
+[32m+[m					[32mif(tblTickets.getValueAt(i, 1).toString().equals(session.toString())) {[m
+[32m+[m						[32mhaveSession = true;[m
+[32m+[m					[32m}[m
+[32m+[m				[32m}[m
+[32m+[m				[32mif(!haveSession) {[m
+[32m+[m					[32mcreateTicketsOnSale(session, priece);[m
+[32m+[m					[32mtxtPriece.setText("");[m
+[32m+[m				[32m}else {[m
+[32m+[m					[32mJOptionPane.showMessageDialog(null, "Já existe um ingresso para essa sessão!");[m
+[32m+[m				[32m}[m
+[32m+[m
+ 			[m
+ 				}[m
+ 			}[m
+[1mdiff --git a/src/view/ViewEmployerBoard.java b/src/view/ViewEmployerBoard.java[m
+[1mindex 2890af6..008d394 100644[m
+[1m--- a/src/view/ViewEmployerBoard.java[m
+[1m+++ b/src/view/ViewEmployerBoard.java[m
+[36m@@ -41,6 +41,7 @@[m [mpublic class ViewEmployerBoard extends JFrame {[m
+ 	private JTable tblSessions;[m
+ 	private JTable tblTickets;[m
+ 	private JComboBox<Object> cbFilm;[m
+[32m+[m	[32mprivate JComboBox<Object> cbSession;[m
+ [m
+ [m
+ 	/**[m
+[36m@@ -105,6 +106,15 @@[m [mpublic class ViewEmployerBoard extends JFrame {[m
+ 		panel_1.add(panel_2);[m
+ 		panel_2.setLayout(null);[m
+ 		[m
+[32m+[m		[32mcbFilm = new JComboBox<Object>();[m
+[32m+[m		[32mcbFilm.setBounds(135, 59, 139, 20);[m
+[32m+[m		[32mpanel_2.add(cbFilm);[m
+[32m+[m		[32mfillCbFilm();[m
+[32m+[m[41m		[m
+[32m+[m		[32mJLabel label_2 = new JLabel("Filme");[m
+[32m+[m		[32mlabel_2.setBounds(79, 62, 46, 14);[m
+[32m+[m		[32mpanel_2.add(label_2);[m
+[32m+[m[41m		[m
+ 		JComboBox<Object> cbType = new JComboBox<Object>();[m
+ 		cbType.setBounds(135, 118, 139, 20);[m
+ 		panel_2.add(cbType);[m
+[36m@@ -117,18 +127,12 @@[m [mpublic class ViewEmployerBoard extends JFrame {[m
+ 		label_1.setBounds(79, 93, 46, 14);[m
+ 		panel_2.add(label_1);[m
+ 		[m
+[31m-		JComboBox<Object> cbSession = new JComboBox<Object>();[m
+[32m+[m		[32mcbSession = new JComboBox<Object>();[m
+ 		cbSession.setBounds(135, 90, 139, 20);[m
+ 		panel_2.add(cbSession);[m
+[32m+[m		[32mfillCbSession();[m
+ 		[m
+[31m-		cbFilm = new JComboBox<Object>();[m
+[31m-		cbFilm.setBounds(135, 59, 139, 20);[m
+[31m-		panel_2.add(cbFilm);[m
+[31m-		fillCbFilm();[m
+[31m-		[m
+[31m-		JLabel label_2 = new JLabel("Filme");[m
+[31m-		label_2.setBounds(79, 62, 46, 14);[m
+[31m-		panel_2.add(label_2);[m
+[32m+[m
+ 		[m
+ 		JLabel lblValor = new JLabel("Valor");[m
+ 		lblValor.setBounds(145, 149, 46, 14);[m
+[36m@@ -255,21 +259,17 @@[m [mpublic class ViewEmployerBoard extends JFrame {[m
+ 		FilmSessionController sessionController = new FilmSessionController();[m
+ 		FilmController filmController = new FilmController();[m
+ 		cbFilm.removeAllItems();[m
+[31m-		[m
+[32m+[m		[32mcbFilm.addItem("Escolha o filme");[m
+ 		for(TicketsOnSaleModel ticketModel : ticketController.read()) {[m
+[32m+[m[41m		[m
+ 			FilmSessionModel sessionModel = sessionController.findById(ticketModel.getSessionId());[m
+ 			FilmModel filmModel = filmController.findById(sessionModel.getFilm());[m
+ 			[m
+[31m-			System.out.println(cbFilm.getItemCount());[m
+[31m-			if(cbFilm.getItemCount() != 0) {[m
+[31m-				for(int i = 0; i < cbFilm.getItemCount(); i++) {[m
+[31m-					if(!cbFilm.getItemAt(i).toString().equals(filmModel.toString())) {[m
+[31m-						cbFilm.addItem(filmModel);[m
+[31m-					}[m
+[31m-				}[m
+[31m-			}else {[m
+[31m-				cbFilm.addItem(filmModel);[m
+[31m-			}[m
+[32m+[m			[32mcbFilm.addItem(filmModel);[m[41m	[m
+ 		}[m
+ 	}[m
+[32m+[m[41m	[m
+[32m+[m	[32mprivate void fillCbSession() {[m
+[32m+[m[41m		[m
+[32m+[m	[32m}[m
+ }[m

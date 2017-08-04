@@ -9,6 +9,7 @@ import javax.swing.border.EmptyBorder;
 import model.FilmModel;
 import model.FilmSessionModel;
 import model.RoomModel;
+import model.TicketSaleModel;
 import model.TicketsOnSaleModel;
 import model.UserModel;
 import java.awt.Toolkit;
@@ -26,6 +27,7 @@ import javax.swing.table.DefaultTableModel;
 import controller.FilmController;
 import controller.FilmSessionController;
 import controller.RoomController;
+import controller.TicketSaleController;
 import controller.TicketsOnSaleController;
 
 import javax.swing.JComboBox;
@@ -50,6 +52,7 @@ public class ViewEmployerBoard extends JFrame {
 	private JComboBox<Object> cbSession;
 	private JLabel lblValue;
 	private JLabel lblTotal;
+	private JComboBox<Object> cbType;
 	
 	private int m = 0;
 	
@@ -86,6 +89,10 @@ public class ViewEmployerBoard extends JFrame {
 				"id", "Filme", "Dia", "Hor\u00E1rio", "Sala", "Tipo", "Dimens\u00E3o", "Status", "Quantidade"
 			}
 		) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			boolean[] columnEditables = new boolean[] {
 				false, false, false, false, false, false, false, false, false
 			};
@@ -132,7 +139,7 @@ public class ViewEmployerBoard extends JFrame {
 		label_2.setBounds(79, 62, 46, 14);
 		panel_2.add(label_2);
 		
-		JComboBox<Object> cbType = new JComboBox<Object>();
+		cbType = new JComboBox<Object>();
 		cbType.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(cbFilm.getSelectedItem().toString() != "Selecione um sessão se o filme estiver selecionado") {
@@ -225,6 +232,10 @@ public class ViewEmployerBoard extends JFrame {
 				"Filme", "Sess\u00E3o", "Tipo", "Valor"
 			}
 		) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			boolean[] columnEditables = new boolean[] {
 				false, false, false, false
 			};
@@ -238,9 +249,22 @@ public class ViewEmployerBoard extends JFrame {
 		tblTickets.getColumnModel().getColumn(3).setResizable(false);
 		scrollPane_1.setViewportView(tblTickets);
 		
-		JButton btlFinalize = new JButton("Finalizar Compra");
-		btlFinalize.setBounds(225, 309, 129, 23);
-		panel_1.add(btlFinalize);
+		JButton btnFinalize = new JButton("Finalizar venda");
+		btnFinalize.setBounds(225, 309, 129, 23);
+		btnFinalize.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(tblTickets.getRowCount() != 0) {
+					int checkFinalize = JOptionPane.showConfirmDialog(null, "Finalizar Venda?");
+					if(checkFinalize == 0) {
+						finalizeSold();
+					}
+				}
+			}
+		});
+		panel_1.add(btnFinalize);
 		
 		JLabel lblValorTotal = new JLabel("Valor total: R$");
 		lblValorTotal.setBounds(274, 267, 80, 14);
@@ -252,6 +276,14 @@ public class ViewEmployerBoard extends JFrame {
 		
 		JButton btnCleanAll = new JButton("Limpar tudo");
 		btnCleanAll.setBounds(364, 309, 110, 23);
+		btnCleanAll.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				cleanAll();
+			}
+		});
 		panel_1.add(btnCleanAll);
 		
 		JButton btnRemoverSelecionado = new JButton("Remover Selecionado");
@@ -408,5 +440,44 @@ public class ViewEmployerBoard extends JFrame {
 		}
 		
 		lblTotal.setText(currentPriece.toString().replace('.', ','));
+	}
+	
+	private void finalizeSold() {
+		TicketSaleController saleController = new TicketSaleController();
+		TicketSaleModel saleModel = new TicketSaleModel();
+		TicketsOnSaleController ticketController = new TicketsOnSaleController();
+		
+		for(int i = 0; i < tblTickets.getRowCount(); i++) {
+			TicketsOnSaleModel ticket = ticketController.findById(Integer.parseInt(tblTickets.getValueAt(i, 1).toString()));
+			String type = tblTickets.getValueAt(i, 2).toString();
+			double value = Double.parseDouble(tblTickets.getValueAt(i, 3).toString().replace(',', '.'));
+			
+			int quantity = ticket.getQuantity() - 1;
+			ticket.setQuantity(quantity);
+			
+			saleModel.setTicketId(ticket.getId());
+			saleModel.setType(type);
+			saleModel.setValue(value);
+			
+			saleController.create(saleModel);
+			ticketController.update(ticket);
+		}
+		JOptionPane.showMessageDialog(null, "Vendido!");
+		cleanAll();
+		updateSessionTable();
+	}
+	
+	private void cleanAll() {
+		cbFilm.setSelectedIndex(0);
+		cbSession.setSelectedIndex(0);
+		cbType.setSelectedIndex(0);
+		lblValue.setText("0,0");
+		lblTotal.setText("0,0");
+		
+		int cleanTable = JOptionPane.showConfirmDialog(null, "Deseja zerar tabela?");
+		if(cleanTable == 0) {
+			DefaultTableModel tModel =(DefaultTableModel) tblTickets.getModel();
+			tModel.setNumRows(0);
+		}
 	}
 }

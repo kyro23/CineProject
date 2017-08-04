@@ -9,10 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
-
+ 
 public class ConnectionFactory {
 	private static final String DRIVER = "com.mysql.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://192.168.0.4:3306/cinema";
+	private static final String URL = "jdbc:mysql://192.168.0.254:3306/cinema";
 	private static final String USERNAME = "DBMananger";
 	private static final String PASSWORD = "";
 	

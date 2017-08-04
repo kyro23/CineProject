@@ -127,4 +127,32 @@ public class TicketsOnSaleController {
 		
 		return ticket;
 	}
+	
+	public TicketsOnSaleModel findById(int id) {
+		Connection con = ConnectionFactory.getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		TicketsOnSaleModel ticket = new TicketsOnSaleModel();
+		
+		try {
+			stmt = con.prepareStatement("SELECT * FROM ticketsonsale WHERE id = ?");
+			stmt.setInt(1, id);
+			
+			rs = stmt.executeQuery();
+			if(rs.next()) {
+				ticket.setId(rs.getInt("id"));
+				ticket.setSessionId(rs.getInt("sessionId"));
+				ticket.setPriece(rs.getDouble("priece"));
+				ticket.setQuantity(rs.getInt("quantity"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			ConnectionFactory.closeConnection(con, stmt, rs);
+		}
+		
+		return ticket;
+	}
 }

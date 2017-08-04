@@ -30,6 +30,7 @@ import controller.TicketsOnSaleController;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -47,6 +48,8 @@ public class ViewEmployerBoard extends JFrame {
 	private JTable tblTickets;
 	private JComboBox<Object> cbFilm;
 	private JComboBox<Object> cbSession;
+	private JLabel lblValue;
+	private JLabel lblTotal;
 	
 	private int m = 0;
 	
@@ -77,18 +80,14 @@ public class ViewEmployerBoard extends JFrame {
 		tblSessions = new JTable();
 		tblSessions.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, "", null, null, null, null, null, null, null},
+				{"", "", null, null, null, null, null, null, null},
 			},
 			new String[] {
 				"id", "Filme", "Dia", "Hor\u00E1rio", "Sala", "Tipo", "Dimens\u00E3o", "Status", "Quantidade"
 			}
 		) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 			boolean[] columnEditables = new boolean[] {
-				false, true, true, true, true, true, true, true, true
+				false, false, false, false, false, false, false, false, false
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
@@ -102,6 +101,7 @@ public class ViewEmployerBoard extends JFrame {
 		tblSessions.getColumnModel().getColumn(5).setResizable(false);
 		tblSessions.getColumnModel().getColumn(6).setResizable(false);
 		tblSessions.getColumnModel().getColumn(7).setResizable(false);
+		tblSessions.getColumnModel().getColumn(8).setResizable(false);
 		scrollPane.setViewportView(tblSessions);
 		
 		JPanel panel_1 = new JPanel();
@@ -143,6 +143,16 @@ public class ViewEmployerBoard extends JFrame {
 		});
 		cbType.setModel(new DefaultComboBoxModel<Object>(new String[] {"Inteira", "Meia"}));
 		cbType.setBounds(135, 118, 139, 20);
+		cbType.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(cbSession.getSelectedItem() != "Selecione a sessão") {
+					updateLblValue(Integer.parseInt(cbSession.getSelectedItem().toString()), cbType.getSelectedItem().toString());
+				}
+			}
+		});
 		panel_2.add(cbType);
 		
 		JLabel label = new JLabel("Tipo");
@@ -156,24 +166,46 @@ public class ViewEmployerBoard extends JFrame {
 		cbSession = new JComboBox<Object>();
 		cbSession.setBounds(135, 90, 139, 20);
 		panel_2.add(cbSession);
-		fillCbSession();
-		
+		fillCbSession();		
+		cbSession.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(cbSession.getSelectedItem() != null) {
+					if(cbSession.getSelectedItem() != "Selecione a sessão") {
+						updateLblValue(Integer.parseInt(cbSession.getSelectedItem().toString()), cbType.getSelectedItem().toString());
+					}
+				}
+			}
+		});
 
 		
-		JLabel lblValor = new JLabel("Valor");
-		lblValor.setBounds(145, 149, 46, 14);
+		JLabel lblValor = new JLabel("Valor: R$ ");
+		lblValor.setBounds(135, 149, 56, 14);
 		panel_2.add(lblValor);
 		
-		JLabel lblValue = new JLabel("R$ 0,00");
+		lblValue = new JLabel("0,00");
 		lblValue.setBounds(201, 149, 46, 14);
 		panel_2.add(lblValue);
 		
-		JButton btnAdicionarIngresso = new JButton("Adicionar Ingresso");
-		btnAdicionarIngresso.setBounds(135, 283, 139, 23);
-		panel_2.add(btnAdicionarIngresso);
-		
 		JButton btnAddTicket = new JButton("Adicionar Ingresso");
 		btnAddTicket.setBounds(104, 206, 170, 23);
+		btnAddTicket.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(cbFilm.getSelectedItem().toString() != "Escolha o filme" && cbSession.getSelectedItem().toString() != "Selecione a sessão") {
+					String film = cbFilm.getSelectedItem().toString();
+					int session = Integer.parseInt(cbSession.getSelectedItem().toString());
+					String priece = lblValue.getText();
+					String type = cbType.getSelectedItem().toString();
+					
+					updateTableTickets(film, session, priece, type);
+				}
+			}
+		});
 		panel_2.add(btnAddTicket);
 		
 		JPanel panel_3 = new JPanel();
@@ -188,16 +220,11 @@ public class ViewEmployerBoard extends JFrame {
 		tblTickets = new JTable();
 		tblTickets.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, null, null, null},
 			},
 			new String[] {
 				"Filme", "Sess\u00E3o", "Tipo", "Valor"
 			}
 		) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 			boolean[] columnEditables = new boolean[] {
 				false, false, false, false
 			};
@@ -215,12 +242,12 @@ public class ViewEmployerBoard extends JFrame {
 		btlFinalize.setBounds(225, 309, 129, 23);
 		panel_1.add(btlFinalize);
 		
-		JLabel lblValorTotal = new JLabel("Valor total:");
-		lblValorTotal.setBounds(282, 267, 72, 14);
+		JLabel lblValorTotal = new JLabel("Valor total: R$");
+		lblValorTotal.setBounds(274, 267, 80, 14);
 		panel_1.add(lblValorTotal);
 		
-		JLabel lblTotal = new JLabel("R$ 0,00");
-		lblTotal.setBounds(374, 267, 46, 14);
+		lblTotal = new JLabel("0,00");
+		lblTotal.setBounds(364, 267, 46, 14);
 		panel_1.add(lblTotal);
 		
 		JButton btnCleanAll = new JButton("Limpar tudo");
@@ -229,6 +256,19 @@ public class ViewEmployerBoard extends JFrame {
 		
 		JButton btnRemoverSelecionado = new JButton("Remover Selecionado");
 		btnRemoverSelecionado.setBounds(10, 263, 178, 23);
+		btnRemoverSelecionado.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(tblTickets.getSelectedRow() != -1) {
+					DefaultTableModel tModel = (DefaultTableModel) tblTickets.getModel();
+					tModel.removeRow(tblTickets.getSelectedRow());
+					JOptionPane.showMessageDialog(null, "Ingresso removido com sucesso!");
+					updateLblTotal();;
+				}
+			}
+		});
 		panel_1.add(btnRemoverSelecionado);
 		
 		updateSessionTable();
@@ -313,7 +353,7 @@ public class ViewEmployerBoard extends JFrame {
 	
 	private void fillCbSession() {
 		cbSession.removeAllItems();
-		cbSession.addItem("Selecione um sessão se o filme estiver selecionado");
+		cbSession.addItem("Selecione a sessão");
 		if(cbFilm.getSelectedItem() != "Escolha o filme") {
 			FilmSessionController sessionController = new FilmSessionController();
 			TicketsOnSaleController ticketController = new TicketsOnSaleController();
@@ -326,5 +366,47 @@ public class ViewEmployerBoard extends JFrame {
 				cbSession.addItem(ticketModel);
 			}
 		}
+	}
+	
+	private void updateLblValue(int session, String type){
+		TicketsOnSaleController ticketController = new TicketsOnSaleController();
+		TicketsOnSaleModel ticketModel = ticketController.findById(session);
+		Double value = ticketModel.getPriece();
+		
+		if(type.equals("Meia")) {
+			value /= 2;
+		}
+		
+		lblValue.setText(value.toString().replace('.', ','));
+	}
+	
+	private void updateTableTickets(String film, int session, String priece, String type) {		
+		TicketsOnSaleController ticketController = new TicketsOnSaleController();
+		
+		TicketsOnSaleModel ticketModel = ticketController.findById(session);
+		DefaultTableModel tModel = (DefaultTableModel) tblTickets.getModel();
+		
+		int quantity = ticketModel.getQuantity();
+		
+		if(tblTickets.getRowCount() < quantity) {
+			tModel.addRow(new Object[] {
+					film,
+					session,
+					type,
+					priece
+			});
+		}else {
+			JOptionPane.showMessageDialog(null, "A quantidade de ingressos excede o limite da sala.");
+		}
+		updateLblTotal();
+	}
+	
+	private void updateLblTotal() {
+		Double currentPriece = 0.0;
+		for(int i = 0; i < tblTickets.getRowCount(); i++) {
+			currentPriece += Double.parseDouble(tblTickets.getValueAt(i, 3).toString().replace(',',  '.'));
+		}
+		
+		lblTotal.setText(currentPriece.toString().replace('.', ','));
 	}
 }

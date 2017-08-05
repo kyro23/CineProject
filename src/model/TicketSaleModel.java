@@ -1,5 +1,12 @@
 package model;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
+
 public class TicketSaleModel {
 	/*
 	 * PAY ATTENTION
@@ -38,5 +45,16 @@ public class TicketSaleModel {
 	}
 	public void setTicketId(int ticketId) {
 		this.ticketId = ticketId;
+	}
+	
+	public void generateTicket(TicketSaleModel ticket) {
+		Document ticketPdf = new Document();
+		
+		try {
+			PdfWriter.getInstance(ticketPdf, new FileOutputStream("ingresso.pdf"));
+		} catch (FileNotFoundException | DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

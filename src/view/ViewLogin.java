@@ -20,6 +20,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Scanner;
 import java.awt.Toolkit;
 
 public class ViewLogin extends JFrame {
@@ -36,6 +41,8 @@ public class ViewLogin extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+
+		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -163,4 +170,6 @@ public class ViewLogin extends JFrame {
 			JOptionPane.showMessageDialog(null, "Nome de usuário ou senha incorretos!");
 		}
 	}
+	
+
 }

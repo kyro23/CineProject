@@ -1,8 +1,11 @@
 package factory;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Properties;
 
 public class SystemFactory {
 	public String hashPass(String pass) {
@@ -28,5 +31,26 @@ public class SystemFactory {
 		}
 
 		return md5Hash;
+	}
+	
+	public static Properties getProp() throws IOException{
+		Properties prop = new Properties();
+		FileInputStream file = new FileInputStream("./properties/config.properties");
+		
+		prop.load(file);
+		return prop;
+	}
+	
+	public static Properties getDefaultProperties() throws IOException{
+		Properties prop = new Properties();
+		FileInputStream file = new FileInputStream("./properties/default.properties");
+		
+		prop.load(file);
+		return prop;
+	}
+	
+	public boolean verifyConnection(String url, String login, String password) {
+		ConnectionFactory conFact = new ConnectionFactory();
+		return conFact.testConnection(url, login, password);
 	}
 }

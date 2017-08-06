@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import model.FilmModel;
 import model.FilmSessionModel;
 import model.RoomModel;
+import model.TicketSaleModel;
 import model.TicketsOnSaleModel;
 import model.UserModel;
 import java.awt.BorderLayout;
@@ -22,6 +23,7 @@ import javax.swing.table.DefaultTableModel;
 import controller.FilmController;
 import controller.FilmSessionController;
 import controller.RoomController;
+import controller.TicketSaleController;
 import controller.TicketsOnSaleController;
 import controller.UserController;
 
@@ -79,6 +81,7 @@ public class ViewAdminBoard extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings("serial")
 	public ViewAdminBoard(UserModel user) {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(ViewAdminBoard.class.getResource("/images/cine ico.png")));
 		setResizable(false);
@@ -117,10 +120,6 @@ public class ViewAdminBoard extends JFrame {
 				"ID", "Nome de Usu\u00E1rio", "N\u00EDvel de Privil\u00E9gio"
 			}
 		) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 			boolean[] columnEditables = new boolean[] {
 				false, false, false
 			};
@@ -254,7 +253,15 @@ public class ViewAdminBoard extends JFrame {
 			new String[] {
 				"ID", "N\u00FAmero da Sala", "Capacidade", "Status da sala"
 			}
-		));
+		) {
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		tblRooms.getColumnModel().getColumn(0).setResizable(false);
 		tblRooms.getColumnModel().getColumn(1).setResizable(false);
 		tblRooms.getColumnModel().getColumn(2).setResizable(false);
 		tblRooms.getColumnModel().getColumn(3).setResizable(false);
@@ -392,12 +399,8 @@ public class ViewAdminBoard extends JFrame {
 				"ID", "T\u00EDtulo", "Atores", "Sinopse", "G\u00EAnero", "Dura\u00E7\u00E3o", "Diretores", "Class. Indicativa"
 			}
 		) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
 			boolean[] columnEditables = new boolean[] {
-				false, false, false, false, false, false, true, true
+				false, false, false, false, false, false, false, false
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
@@ -409,6 +412,8 @@ public class ViewAdminBoard extends JFrame {
 		tblFilm.getColumnModel().getColumn(3).setResizable(false);
 		tblFilm.getColumnModel().getColumn(4).setResizable(false);
 		tblFilm.getColumnModel().getColumn(5).setResizable(false);
+		tblFilm.getColumnModel().getColumn(6).setResizable(false);
+		tblFilm.getColumnModel().getColumn(7).setResizable(false);
 		scrollPane_2.setViewportView(tblFilm);
 	
 		
@@ -612,7 +617,15 @@ public class ViewAdminBoard extends JFrame {
 			new String[] {
 				"ID", "Filme", "Dia", "Hora", "Sala", "Tipo", "Dimens\u00E3o", "Status"
 			}
-		));
+		) {
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false, false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		tblSessions.getColumnModel().getColumn(0).setResizable(false);
 		tblSessions.getColumnModel().getColumn(1).setResizable(false);
 		tblSessions.getColumnModel().getColumn(2).setResizable(false);
 		tblSessions.getColumnModel().getColumn(3).setResizable(false);
@@ -1050,6 +1063,10 @@ public class ViewAdminBoard extends JFrame {
 		tblTicketSold.getColumnModel().getColumn(3).setResizable(false);
 		scrollPane_5.setViewportView(tblTicketSold);
 		
+		JPanel panel_17 = new JPanel();
+		tabbedPane.addTab("Relatr\u00F3rio", new ImageIcon(ViewAdminBoard.class.getResource("/images/chart_bar.png")), panel_17, null);
+		panel_17.setLayout(null);
+		
 		updateUserTable();
 		
 		updateRoomTable();
@@ -1062,6 +1079,7 @@ public class ViewAdminBoard extends JFrame {
 		
 		fillCbSession();
 		updateTicketsTable();
+		fillTblTicketSold();
 	}
 	
 	
@@ -1498,5 +1516,21 @@ public class ViewAdminBoard extends JFrame {
 		controller.delete(model);
 		JOptionPane.showMessageDialog(null, "Excluído com sucesso!");
 		updateTicketsTable();
+	}
+	
+	private void fillTblTicketSold() {
+		TicketSaleController saleController = new TicketSaleController();
+		
+		DefaultTableModel tModel = (DefaultTableModel) tblTicketSold.getModel();
+		tModel.setNumRows(0);
+		
+		for(TicketSaleModel saleModel : saleController.read()) {
+			tModel.addRow(new Object[] {
+					saleModel.getId(),
+					saleModel.getType(),
+					saleModel.getValue(),
+					saleModel.getTicketId()
+			});
+		}
 	}
 }

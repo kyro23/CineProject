@@ -334,23 +334,25 @@ public class ViewEmployerBoard extends JFrame {
 			String dimension = session.getDimension();
 			String sessionStatus = session.getSessionStatus();
 			
-			FilmModel film = filmController.findById(filmId);
-			RoomModel room = roomController.findById(roomId);
-			
-			int quantity = ticket.getQuantity();
-			int id = ticket.getId();
-			
-			model.addRow(new Object[] {
-					id,
-					film,
-					day,
-					hour,
-					room,
-					type,
-					dimension,
-					sessionStatus,
-					quantity
-			});
+			if(!sessionStatus.equals("Encerrada")) {
+				FilmModel film = filmController.findById(filmId);
+				RoomModel room = roomController.findById(roomId);
+				
+				int quantity = ticket.getQuantity();
+				int id = ticket.getId();
+				
+				model.addRow(new Object[] {
+						id,
+						film,
+						day,
+						hour,
+						room,
+						type,
+						dimension,
+						sessionStatus,
+						quantity
+				});
+			}
 		}
 	}
 	
@@ -369,7 +371,9 @@ public class ViewEmployerBoard extends JFrame {
 			FilmSessionModel sessionModel = sessionController.findById(ticketModel.getSessionId());
 			FilmModel filmModel = filmController.findById(sessionModel.getFilm());
 		
-			films.add(filmModel);	
+			if(!sessionModel.getSessionStatus().equals("Encerrada")) {
+				films.add(filmModel);	
+			}
 		}
 		
 		for(int i = 0; i < films.size(); i++) {
@@ -445,15 +449,23 @@ public class ViewEmployerBoard extends JFrame {
 	private void finalizeSold() {
 		TicketSaleController saleController = new TicketSaleController();
 		TicketSaleModel saleModel = new TicketSaleModel();
+		FilmSessionController sessionController = new FilmSessionController();
 		TicketsOnSaleController ticketController = new TicketsOnSaleController();
+		
+		List<TicketSaleModel> ticketsList = new ArrayList<>();
 		
 		for(int i = 0; i < tblTickets.getRowCount(); i++) {
 			TicketsOnSaleModel ticket = ticketController.findById(Integer.parseInt(tblTickets.getValueAt(i, 1).toString()));
+			FilmSessionModel sessionModel= sessionController.findById(ticket.getSessionId());
 			String type = tblTickets.getValueAt(i, 2).toString();
 			double value = Double.parseDouble(tblTickets.getValueAt(i, 3).toString().replace(',', '.'));
 			
 			int quantity = ticket.getQuantity() - 1;
 			ticket.setQuantity(quantity);
+			if(ticket.getQuantity() == 0) {
+				sessionModel.setSessionStatus("Encerrada");
+				sessionController.update(sessionModel);
+			}
 			
 			saleModel.setTicketId(ticket.getId());
 			saleModel.setType(type);
@@ -461,7 +473,12 @@ public class ViewEmployerBoard extends JFrame {
 			
 			saleController.create(saleModel);
 			ticketController.update(ticket);
+			
+			ticketsList.add(saleModel);
 		}
+		double totalValue = Double.parseDouble(lblTotal.getText().replace(',', '.'));
+		saleModel.generateTicket(ticketsList, totalValue);
+		
 		JOptionPane.showMessageDialog(null, "Vendido!");
 		cleanAll();
 		updateSessionTable();

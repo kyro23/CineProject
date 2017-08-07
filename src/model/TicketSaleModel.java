@@ -111,10 +111,7 @@ public class TicketSaleModel {
 				ticketPdf.add(new Paragraph("Tipo de entrada: "+ticketType));
 				ticketPdf.add(new Paragraph("Preço: "+priece));
 				ticketPdf.add(new Paragraph("Sala: "+room));
-				ticketPdf.add(new Paragraph("Dia: "+day+" ás "+hourTicket));
-				
-				
-				
+				ticketPdf.add(new Paragraph("Dia: "+day+" ás "+hourTicket));			
 			}
 			
 		} catch (DocumentException | IOException e) {

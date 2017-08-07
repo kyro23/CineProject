@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Toolkit;
+import javax.swing.UIManager;
 
 public class ViewLogin extends JFrame {
 
@@ -36,6 +37,11 @@ public class ViewLogin extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 
 		
 		EventQueue.invokeLater(new Runnable() {
@@ -114,7 +120,7 @@ public class ViewLogin extends JFrame {
 		contentPane.add(btnCancelar);
 	}
 	
-	public boolean chechlogin(String username, String pass) {
+	private boolean checklogin(String username, String pass) {
 		boolean check = false;
 		
 		UserModel model = new UserModel();
@@ -132,7 +138,7 @@ public class ViewLogin extends JFrame {
 		return check;
 	}
 	
-	public UserModel findUserByName(UserModel user) {
+	private UserModel findUserByName(UserModel user) {
 		UserModel userFinded = new UserModel();
 		UserController controller = new UserController();
 			
@@ -141,12 +147,12 @@ public class ViewLogin extends JFrame {
 		return userFinded;	
 	}
 	
-	public void login() {
+	private void login() {
 		
 		String username = txtUsername.getText();
 		String pass = String.valueOf(txtPass.getPassword());
 
-		if(chechlogin(username, pass)) {
+		if(checklogin(username, pass)) {
 			UserModel user = new UserModel();
 			user.setUsername(username);
 			UserModel finded = findUserByName(user);

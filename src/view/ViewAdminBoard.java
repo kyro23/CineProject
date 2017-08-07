@@ -42,6 +42,9 @@ import java.awt.Toolkit;
 import javax.swing.JTextArea;
 import javax.swing.JSpinner;
 import java.util.Date;
+import javax.swing.UIManager;
+import java.awt.Color;
+import javax.swing.JCheckBox;
 
 public class ViewAdminBoard extends JFrame {
 
@@ -74,6 +77,14 @@ public class ViewAdminBoard extends JFrame {
 	private JComboBox<Object> cbSession;
 	private JTextField txtPriece;
 	private JTable tblTicketSold;
+	private JTable table;
+	
+	private JComboBox<Object> cbFilmReport;
+	private JComboBox<Object> cbPeriod;
+	private JComboBox<Object> cbTicketType;
+	private JPanel specificDays;
+	private JSpinner spnDayInitialToReport;
+	private JSpinner spnDayFinalToReport;
 	/**
 	 * Launch the application.
 	 */
@@ -1067,6 +1078,186 @@ public class ViewAdminBoard extends JFrame {
 		tabbedPane.addTab("Relatr\u00F3rio", new ImageIcon(ViewAdminBoard.class.getResource("/images/chart_bar.png")), panel_17, null);
 		panel_17.setLayout(null);
 		
+		JPanel panel_18 = new JPanel();
+		panel_18.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Ingressos vendidos para filmes", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_18.setBounds(0, 0, 376, 234);
+		panel_17.add(panel_18);
+		panel_18.setLayout(null);
+		
+		cbFilmReport = new JComboBox<Object>();
+		cbFilmReport.setBounds(176, 39, 149, 20);
+		panel_18.add(cbFilmReport);
+		
+		JLabel lblNewLabel = new JLabel("Selecione um filme:");
+		lblNewLabel.setBounds(71, 42, 95, 14);
+		panel_18.add(lblNewLabel);
+		
+		JLabel lblPerodo = new JLabel("Per\u00EDodo:");
+		lblPerodo.setBounds(71, 77, 46, 14);
+		panel_18.add(lblPerodo);
+		
+		cbPeriod = new JComboBox<Object>();
+		cbPeriod.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(cbPeriod.getSelectedItem().toString().equals("Dias específicos")) {
+					specificDays.setVisible(true);
+				}else {
+					specificDays.setVisible(false);
+				}
+			}
+		});
+		cbPeriod.setModel(new DefaultComboBoxModel<Object>(new String[] {"Hoje", "Essa semana", "Esse m\u00EAs", "Esse ano", "Dias espec\u00EDficos"}));
+		cbPeriod.setBounds(176, 74, 149, 20);
+		panel_18.add(cbPeriod);
+		
+		JLabel lblTipoDeIngresso = new JLabel("Tipo de ingresso:");
+		lblTipoDeIngresso.setBounds(71, 113, 95, 14);
+		panel_18.add(lblTipoDeIngresso);
+		
+		cbTicketType = new JComboBox<Object>();
+		cbTicketType.setModel(new DefaultComboBoxModel<Object>(new String[] {"Meia", "Inteira", "Todos"}));
+		cbTicketType.setBounds(176, 110, 149, 20);
+		panel_18.add(cbTicketType);
+		
+		JButton btnGenerateTSReport = new JButton("Gerar Relat\u00F3rio");
+		btnGenerateTSReport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//banana
+				FilmModel film = (FilmModel) cbFilmReport.getSelectedItem();
+				String period = cbPeriod.getSelectedItem().toString();
+				String ticketType = cbTicketType.getSelectedItem().toString();
+				
+				Date dayInitialValue = null, dayFinalValue = null;
+				
+				if(period.equals("Dias específicos")) {
+					dayInitialValue = (Date) spnDayInitialToReport.getValue();
+					dayFinalValue = (Date) spnDayFinalToReport.getValue();
+				}
+				
+				generateFilmReport(film, period, ticketType, dayInitialValue, dayFinalValue);
+			}
+		});
+		btnGenerateTSReport.setBounds(130, 186, 129, 23);
+		panel_18.add(btnGenerateTSReport);
+		
+		specificDays = new JPanel();
+		specificDays.setBounds(10, 132, 315, 44);
+		panel_18.add(specificDays);
+		specificDays.setLayout(null);
+		specificDays.setVisible(false);
+		
+		spnDayInitialToReport = new JSpinner();
+		spnDayInitialToReport.setBounds(75, 11, 85, 20);
+		specificDays.add(spnDayInitialToReport);
+		spnDayInitialToReport.setModel(new SpinnerDateModel());
+		spnDayInitialToReport.setEditor(new JSpinner.DateEditor(spnDayInitialToReport, "dd/MM/yyyy"));
+		
+		JLabel lblDiaInicial = new JLabel("Dia Inicial");
+		lblDiaInicial.setBounds(10, 14, 55, 14);
+		specificDays.add(lblDiaInicial);
+		
+		spnDayFinalToReport = new JSpinner();
+		spnDayFinalToReport.setBounds(230, 11, 85, 20);
+		specificDays.add(spnDayFinalToReport);
+		spnDayFinalToReport.setModel(new SpinnerDateModel());
+		spnDayFinalToReport.setEditor(new JSpinner.DateEditor(spnDayFinalToReport, "dd/MM/yyyy"));
+		
+		JLabel lblDiaFinal = new JLabel("Dia Final");
+		lblDiaFinal.setBounds(176, 14, 46, 14);
+		specificDays.add(lblDiaFinal);
+		
+		JPanel panel_19 = new JPanel();
+		panel_19.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "Salas do cinema", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		panel_19.setBounds(382, 0, 376, 234);
+		panel_17.add(panel_19);
+		panel_19.setLayout(null);
+		
+		JLabel lblEstadoDaSala = new JLabel("Estado da sala");
+		lblEstadoDaSala.setBounds(35, 32, 83, 14);
+		panel_19.add(lblEstadoDaSala);
+		
+		JComboBox<Object> comboBox_3 = new JComboBox<Object>();
+		comboBox_3.setModel(new DefaultComboBoxModel<Object>(new String[] {"Livre", "Limpesa", "Manuten\u00E7\u00E3o", "Em sess\u00E3o"}));
+		comboBox_3.setBounds(128, 29, 116, 20);
+		panel_19.add(comboBox_3);
+		
+		JLabel lblCapacidade = new JLabel("Capacidade:");
+		lblCapacidade.setBounds(35, 71, 83, 14);
+		panel_19.add(lblCapacidade);
+		
+		JLabel lblDe = new JLabel("De:");
+		lblDe.setBounds(128, 71, 27, 14);
+		panel_19.add(lblDe);
+		
+		JSpinner spinner = new JSpinner();
+		spinner.setBounds(148, 68, 46, 20);
+		panel_19.add(spinner);
+		
+		JLabel lblAt = new JLabel("At\u00E9:");
+		lblAt.setBounds(204, 71, 27, 14);
+		panel_19.add(lblAt);
+		
+		JSpinner spinner_1 = new JSpinner();
+		spinner_1.setBounds(224, 68, 53, 20);
+		panel_19.add(spinner_1);
+		
+		JLabel lblLugares = new JLabel("Lugares");
+		lblLugares.setBounds(288, 71, 46, 14);
+		panel_19.add(lblLugares);
+		
+		JCheckBox ckbAllRoom = new JCheckBox("Todas as salas");
+		ckbAllRoom.setBounds(128, 119, 97, 23);
+		panel_19.add(ckbAllRoom);
+		
+		JButton btnGenerateRoomR = new JButton("Gerar Relat\u00F3rio");
+		btnGenerateRoomR.setBounds(128, 183, 122, 23);
+		panel_19.add(btnGenerateRoomR);
+		
+		JPanel panel_20 = new JPanel();
+		panel_20.setBorder(new TitledBorder(null, "Histr\u00F3rico de Relatr\u00F3rios", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_20.setBounds(0, 245, 758, 209);
+		panel_17.add(panel_20);
+		panel_20.setLayout(null);
+		
+		JPanel panel_21 = new JPanel();
+		panel_21.setBounds(0, 23, 541, 175);
+		panel_20.add(panel_21);
+		panel_21.setLayout(new BorderLayout(0, 0));
+		
+		JScrollPane scrollPane_6 = new JScrollPane();
+		panel_21.add(scrollPane_6, BorderLayout.CENTER);
+		
+		table = new JTable();
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null},
+			},
+			new String[] {
+				"Nome do Relatr\u00F3rio", "Data de Cria\u00E7\u00E3o"
+			}
+		) {
+			boolean[] columnEditables = new boolean[] {
+				true, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		table.getColumnModel().getColumn(1).setResizable(false);
+		scrollPane_6.setViewportView(table);
+		
+		JButton btnVisualizarRelatrrio = new JButton("Visualizar Relatr\u00F3rio");
+		btnVisualizarRelatrrio.setBounds(585, 33, 143, 23);
+		panel_20.add(btnVisualizarRelatrrio);
+		
+		JButton btnNewButton_1 = new JButton("Apagar Relatr\u00F3rio");
+		btnNewButton_1.setBounds(585, 82, 143, 23);
+		panel_20.add(btnNewButton_1);
+		
+		JButton btnNewButton_2 = new JButton("Pesquisar Relatr\u00F3rio");
+		btnNewButton_2.setBounds(585, 136, 143, 23);
+		panel_20.add(btnNewButton_2);
+		
 		updateUserTable();
 		
 		updateRoomTable();
@@ -1080,6 +1271,8 @@ public class ViewAdminBoard extends JFrame {
 		fillCbSession();
 		updateTicketsTable();
 		fillTblTicketSold();
+		
+		fillCbFilmReport();
 	}
 	
 	
@@ -1531,6 +1724,26 @@ public class ViewAdminBoard extends JFrame {
 					saleModel.getValue(),
 					saleModel.getTicketId()
 			});
+		}
+	}
+	
+	//reports
+	private void fillCbFilmReport() {
+		cbFilmReport.removeAll();
+		FilmController filmController = new FilmController();
+		
+		for(FilmModel film : filmController.read()) {
+			cbFilmReport.addItem(film);
+		}
+	}
+	
+	private void generateFilmReport(FilmModel film, String period, String ticketType, Date initialDay, Date finalDay) {
+		if(!period.equals("Dias específicos")) {
+			
+		}else {
+			java.sql.Date dayInitial = new java.sql.Date(initialDay.getTime());
+			java.sql.Date dayFinal = new java.sql.Date(finalDay.getTime());
+			
 		}
 	}
 }

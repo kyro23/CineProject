@@ -1741,8 +1741,8 @@ public class ViewAdminBoard extends JFrame {
 		if(!period.equals("Dias específicos")) {
 			
 		}else {
-			java.sql.Date dayInitial = new java.sql.Date(initialDay.getTime());
-			java.sql.Date dayFinal = new java.sql.Date(finalDay.getTime());
+			//java.sql.Date dayInitial = new java.sql.Date(initialDay.getTime());
+			//java.sql.Date dayFinal = new java.sql.Date(finalDay.getTime());
 			
 		}
 	}
